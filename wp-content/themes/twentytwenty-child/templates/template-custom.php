@@ -27,6 +27,8 @@ get_header();
 
 			//get_template_part( 'template-parts/singular' );
 
+            do_action('custom_action_hook');
+
 		}
 	} else {
         echo "No posts.";

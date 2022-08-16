@@ -28,8 +28,7 @@ function add_my_filter($content) {
 add_filter( 'the_content', 'add_my_filter', 10 );
 
 function change_my_filter() {
-    $new_text = "<div>This is my extendable filter</div>";
-    return $new_text;
+    return "<div>This is my extendable filter</div>";
 }
 add_filter( 'custom_filter_change', 'change_my_filter', 10 );
 

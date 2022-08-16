@@ -12,17 +12,6 @@
 get_header();
 ?>
 
-<?php 
-// if(!function_exists('print_my_filter')):
-//     function print_my_filter($content){
-//         $tmp = $content;
-//         $content = "This is my filter" . $tmp;
-//         return $content;
-//     }
-// endif;
-// add_filter('the_content', 'print_my_filter');
-?>
-
 <main id="site-content">
 
 	<?php
