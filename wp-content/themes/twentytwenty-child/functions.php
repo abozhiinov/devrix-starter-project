@@ -22,10 +22,16 @@ endif;
 add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css', 10 );
 
 function add_my_filter($content) {
-    $content = "<div>This is my filter</div>".$content;
+    $content = apply_filters('custom_filter_change', "This is my filter").$content;
     return $content;
 }
 add_filter( 'the_content', 'add_my_filter', 10 );
+
+function change_my_filter() {
+    $new_text = "<div>This is my extendable filter</div>";
+    return $new_text;
+}
+add_filter( 'custom_filter_change', 'change_my_filter', 10 );
 
 function add_two($content) {
     $content .= "<div>Two</div>";
