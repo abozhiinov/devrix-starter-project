@@ -45,4 +45,12 @@ function add_three($content) {
 }
 add_filter( 'the_content', 'add_three', 11 );
 
+function add_custom_menu_item ($items, $args) {
+    if(is_user_logged_in()) {
+        $items .= '<li><a href="/devrix-starter/wp-admin/profile.php">Profile Settings</a></li>';
+    }
+    return $items;
+}
+add_filter( 'wp_nav_menu_items', 'add_custom_menu_item', 10, 2 );
+
 // END ENQUEUE PARENT ACTION
