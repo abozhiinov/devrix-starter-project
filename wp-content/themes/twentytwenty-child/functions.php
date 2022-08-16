@@ -53,4 +53,14 @@ function add_custom_menu_item ($items, $args) {
 }
 add_filter( 'wp_nav_menu_items', 'add_custom_menu_item', 10, 2 );
 
+function email_on_update( $user_id, $old_user_data ) {
+    $to = get_bloginfo('admin_email');
+    $subject = 'Update';
+    $body = 'There was an update';
+    $headers = array('Content-Type: text/html; charset=UTF-8');
+
+    wp_mail( $to, $subject, $body, $headers );
+}
+add_action( 'profile_update', 'email_on_update', 10, 2 );
+
 // END ENQUEUE PARENT ACTION
