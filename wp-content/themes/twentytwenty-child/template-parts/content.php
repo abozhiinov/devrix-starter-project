@@ -36,7 +36,7 @@
 				the_content( __( 'Continue reading', 'twentytwenty' ) );
 			}
 			?>
-			<img src="https://devrix.com/wp-content/themes/devrix-v2/assets/images/img-dixy-standing-left.png"></img>
+			<!-- <img src="https://devrix.com/wp-content/themes/devrix-v2/assets/images/img-dixy-standing-left.png"></img> -->
 
 		</div><!-- .entry-content -->
 

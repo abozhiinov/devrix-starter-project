@@ -25,38 +25,51 @@ function add_my_filter($content) {
     $content = apply_filters('custom_filter_change', "This is my filter").$content;
     return $content;
 }
-add_filter( 'the_content', 'add_my_filter', 10 );
+//add_filter( 'the_content', 'add_my_filter', 10 );
 
 function change_my_filter() {
     return "<div>This is my extendable filter</div>";
 }
-add_filter( 'custom_filter_change', 'change_my_filter', 10 );
+//add_filter( 'custom_filter_change', 'change_my_filter', 10 );
 
 function add_two($content) {
     $content .= "<div>Two</div>";
     return $content;
 }
-add_filter( 'the_content', 'add_two', 11 );
+//add_filter( 'the_content', 'add_two', 11 );
 
 function add_one($content) {
     $content .= "<div>One</div>";
     return $content;
 }
-add_filter( 'the_content', 'add_one', 10 );
+//add_filter( 'the_content', 'add_one', 10 );
 
 function add_three($content) {
     $content .= "<div>Three</div>";
     return $content;
 }
-add_filter( 'the_content', 'add_three', 11 );
+//add_filter( 'the_content', 'add_three', 11 );
 
 function add_custom_menu_item ($items, $args) {
     if(is_user_logged_in()) {
-        $items .= '<li><a href="/devrix-starter/wp-admin/profile.php">Profile Settings</a></li>';
+        $items .= apply_filters('menu_items', '');
     }
     return $items;
 }
 add_filter( 'wp_nav_menu_items', 'add_custom_menu_item', 10, 2 );
+
+function add_students_archive($items) {
+    $items .= '<li><a href="/devrix-starter/student">Students Archive</a></li>';
+    return $items;
+}
+add_filter('menu_items', 'add_students_archive');
+
+function add_profile_settings($items) {
+    $items .= '<li><a href="/devrix-starter/wp-admin/profile.php">Profile Settings</a></li>';
+    return $items;
+}
+add_filter('menu_items', 'add_profile_settings');
+
 
 function email_on_update( $user_id, $old_user_data ) {
     $to = get_bloginfo('admin_email');
