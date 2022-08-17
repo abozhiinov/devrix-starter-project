@@ -13,7 +13,7 @@ get_header(); ?>
 
 <header class="archive-header has-text-align-center header-footer-group">
     <div class="archive-header-inner section-inner medium">
-        <h1 class="archive-title"><a style="text-decoration: none;" href="/devrix-starter/student">Students Archive</a></h1>
+        <h1 class="archive-title"><a href=<?php echo home_url( '/student' );?>>Students Archive</a></h1>
     </div>
 </header>
 
@@ -29,19 +29,18 @@ get_header(); ?>
         <?php
             the_post();
 
-            get_template_part( 'template-parts/content', get_post_type() );
-            //the_post_thumbnail(); 
+            get_template_part( 'template-parts/content', get_post_type() ); 
         ?>
     </div>
     <?php   	
         }
-        echo '<div style="margin-top:50px">';
+        echo '<div>' .
         the_posts_pagination( array(
             'mid_size'  => 2,
             'prev_text' => __( '< Previous Page', 'textdomain' ),
             'next_text' => __( 'Next Page >', 'textdomain' ),
-            ) ); 
-        echo '</div>';
+            ) ) .
+        '</div>';
     }
     ?>
  
