@@ -87,19 +87,19 @@ function student_custom_box_html( $post ) {
     <form method="post">
         <div style="display:inline-block;">
             <label for="location_field">Lives In (Country, City)</label>
-            <input style="margin-top:3%;"name="lives_in" class="postbox" value=""/>
+            <input name="lives_in" class="postbox" value=""/>
         </div>
         <div>
             <label for="address_field">Address</label>
-            <input style="margin-top:1%;" name="address" class="postbox" value=""/>
+            <input name="address" class="postbox" value=""/>
         </div>
         <div>
             <label for="birthdate_field">Birthdate</label>
-            <input type="date" style="margin-top:1%;" name="birthdate" class="postbox" value=""/>
+            <input type="date" name="birthdate" class="postbox" value=""/>
         </div>
         <div>
             <label for="class_field">Class / Grade</label>
-            <select style="margin-top:1%;" name="class" class="postbox">
+            <select name="class" class="postbox">
                 <option value="8">8th</option>
                 <option value="9">9th</option>
                 <option value="10">10th</option>
