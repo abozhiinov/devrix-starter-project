@@ -82,40 +82,68 @@ function email_on_update( $user_id, $old_user_data ) {
 }
 add_action( 'profile_update', 'email_on_update', 10, 2 );
 
+function get_student_info( $post_id ) {
+
+    if( empty( $post_id ) ) return; // Check if it has an ID to work on
+
+    $data = array(); // Create an empty array for needed data
+    $info = get_post_meta( $post_id ); // Get needed data using the get_post_meta() function
+    
+    if( !empty($info) && is_array($info) ) { // Fill the data in the array
+        $data['lives_in']  = !empty( $info['lives_in'] )  ? esc_html( $info['lives_in'][0] )  : '';
+        $data['address']   = !empty( $info['address'] )   ? esc_html( $info['address'][0] )   : '';
+        $data['birthdate'] = !empty( $info['birthdate'] ) ? esc_html( $info['birthdate'][0] ) : '';
+        $data['class']     = !empty( $info['class'] )     ? esc_html( $info['class'][0] )     : '';
+        $data['status']    = !empty( $info['status'] )    ? esc_html( $info['status'][0] )    : '';
+    }
+    
+    return $data;
+}
+
 function student_custom_box_html( $post ) {
+    $data = array(
+        'lives_in'  => '',
+        'address'   => '',
+        'birthdate' => '',
+        'class'     => '',
+        'status'    => ''
+    );
+    if(!empty(get_the_ID())){
+        $data = get_student_info(get_the_ID());
+    }
     ?>
     <form method="post">
-        <div style="display:inline-block;">
-            <label for="location_field">Lives In (Country, City)</label>
-            <input name="lives_in" class="postbox" value=""/>
+        <div>
+            <label for="location_field">Lives In (Country, City)</label></br>
+            <input name="lives_in" class="postbox" value="<?php echo $data['lives_in']; ?>"/>
         </div>
         <div>
-            <label for="address_field">Address</label>
-            <input name="address" class="postbox" value=""/>
+            <label for="address_field">Address</label></br>
+            <input name="address" class="postbox" value="<?php echo $data['address']; ?>"/>
         </div>
         <div>
-            <label for="birthdate_field">Birthdate</label>
-            <input type="date" name="birthdate" class="postbox" value=""/>
+            <label for="birthdate_field">Birthdate</label></br>
+            <input type="date" name="birthdate" class="postbox" value="<?php echo $data['birthdate']; ?>"/>
         </div>
         <div>
-            <label for="class_field">Class / Grade</label>
-            <select name="class" class="postbox">
-                <option value="8">8th</option>
-                <option value="9">9th</option>
-                <option value="10">10th</option>
-                <option value="11">11th</option>
-                <option value="12">12th</option>
+            <label for="class_field">Class / Grade</label></br>
+            <select name="class" class="postbox" value="<?php echo $data['class']; ?>">
+                <option value="8"  <?php if($data['class'] == 8)  { ?> selected <?php } ?>>8th</option>
+                <option value="9"  <?php if($data['class'] == 9)  { ?> selected <?php } ?>>9th</option>
+                <option value="10" <?php if($data['class'] == 10) { ?> selected <?php } ?>>10th</option>
+                <option value="11" <?php if($data['class'] == 11) { ?> selected <?php } ?>>11th</option>
+                <option value="12" <?php if($data['class'] == 12) { ?> selected <?php } ?>>12th</option>
             </select>
         </div>
         <div>
-            <label for="status">Active/Inactive </label></br>
-            <input id="active" type="radio" name="active" class="postbox" value="1"/>
-            <label for="active">Active</label><br>
-            <input id="inactive" type="radio" name="inactive" class="postbox" value="0"/>
-            <label for="inactive">Inactive</label><br>
+            <label for="activity">Activity Status </label></br>
+            <select name="status" class="postbox" value="<?php echo $data['status']; ?>">
+                <option value="1" <?php if($data['status'] == 1) { ?> selected <?php } ?>>Active</option>
+                <option value="0" <?php if($data['status'] == 0) { ?> selected <?php } ?>>Inactive</option>
+            </select>
         </div>
     </form>
-    <?php
+    <?php 
 }
 
 function student_add_custom_box() {
@@ -128,14 +156,41 @@ function student_add_custom_box() {
 }
 add_action( 'add_meta_boxes', 'student_add_custom_box' );
 
-function save_meta_function( $post_id, $post, $update ) {
-    if ( get_post_type( $post_id ) !== 'event' ) return;
-    update_post_meta( $post_id, 'lives_in', $post->lives_in );
-    update_post_meta( $post_id, 'address', $post->address );
-    update_post_meta( $post_id, 'birthdate', $post->birthdate );
-    update_post_meta( $post_id, 'class', $post->class );
-    update_post_meta( $post_id, 'status', $post->lives_in );
+function save_meta_function( $post_id ) {
+    $lives_in  = sanitize_text_field( $_POST['lives_in'] );
+    $address   = sanitize_text_field( $_POST['address'] );
+    $birthdate = sanitize_text_field( $_POST['birthdate'] );
+    $class     = sanitize_text_field( $_POST['class'] );
+    $status    = sanitize_text_field( $_POST['status'] );
+
+    update_post_meta( $post_id, 'lives_in', $lives_in );
+    update_post_meta( $post_id, 'address', $address );
+    update_post_meta( $post_id, 'birthdate', $birthdate );
+    update_post_meta( $post_id, 'class', $class);
+    update_post_meta( $post_id, 'status', $status );
 }
-add_action( 'save_post', 'save_meta_function', 10, 3 );
+add_action( 'save_post', 'save_meta_function', 10 );
+
+function pagination( $paged = '', $max_page = '' ) {
+    $big = 999999999;
+    if( ! $paged ) {
+        $paged = get_query_var('paged');
+    }
+
+    if( ! $max_page ) {
+        global $wp_query;
+        $max_page = isset( $wp_query->max_num_pages ) ? $wp_query->max_num_pages : 1;
+    }
+
+    echo paginate_links( array(
+        'base'       => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+        'format'     => '?paged=%#%',
+        'current'    => max( 1, $paged ),
+        'total'      => $max_page,
+        'mid_size'   => 1,
+        'prev_text'  => __( '<' ),
+        'next_text'  => __( '>' ),
+    ) );
+}
 
 // END ENQUEUE PARENT ACTION

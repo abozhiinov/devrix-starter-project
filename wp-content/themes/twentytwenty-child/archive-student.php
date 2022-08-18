@@ -21,27 +21,33 @@ get_header(); ?>
     <div id="content" role="main" class="archive-header-inner section-inner medium">
  
     <?php 
+    $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+    $args = array(
+        'post_type'  => 'student',
+        'meta_key'   => 'status',
+        'meta_value' => '1',
+        'paged'      => $paged
+    );
+    $query = new WP_Query( $args );
 
-    if( have_posts() ) {
-        while ( have_posts() ) {
+    if( $query->have_posts() ) {
+        while ( $query->have_posts() ) {
     ?>
-    <div style="margin-top:50px"> 
+    <div class="student-box"> 
         <?php
-            the_post();
+            $query->the_post();
+            
+            $title = str_replace(' ','-', strtolower(get_the_title()));
+            echo '<a href=' . home_url($title) . ' class="student-name">' . get_the_title() . '</a>';
 
-            get_template_part( 'template-parts/content', get_post_type() ); 
+            echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
         ?>
     </div>
     <?php   	
         }
-        echo '<div>' .
-        the_posts_pagination( array(
-            'mid_size'  => 2,
-            'prev_text' => __( '< Previous Page', 'textdomain' ),
-            'next_text' => __( 'Next Page >', 'textdomain' ),
-            ) ) .
-        '</div>';
+        pagination( $paged );
     }
+    wp_reset_postdata();
     ?>
  
     </div><!-- #content -->

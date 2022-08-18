@@ -14,7 +14,6 @@ get_header();
 <main id="site-content">
 
 	<?php
-
 	if ( have_posts() ) {
 
 		while ( have_posts() ) {
@@ -26,7 +25,18 @@ get_header();
 
             echo '<div class="has-text-align-center">' . get_the_excerpt() . '</div>';
             
-			//get_template_part( 'template-parts/content', get_post_type() );
+            $data = get_student_info(get_the_ID());
+            foreach($data as $d) : 
+                esc_html($d);
+            endforeach;
+            if($data['status'] == 1) $activity = "Active";
+            else                     $activity = "Inactive";
+            
+            echo '<div class="student-info has-text-align-center">Lives in '        . $data['lives_in']. ', ' . $data['address'] . '</div>';
+            echo '<div class="student-info has-text-align-center">Born on '         . $data['birthdate'] . '</div>';
+            echo '<div class="student-info has-text-align-center">'                 . $data['class'] . 'th class</div>';
+            echo '<div class="student-info has-text-align-center">Profile status: ' .  $activity . '</div>';
+
 		}
 	}
 
