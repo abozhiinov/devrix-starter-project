@@ -32,10 +32,11 @@ get_header();
             if($data['status'] == 1) $activity = "Active";
             else                     $activity = "Inactive";
             
-            echo '<div class="student-info has-text-align-center">Lives in '        . $data['lives_in']. ', ' . $data['address'] . '</div>';
-            echo '<div class="student-info has-text-align-center">Born on '         . $data['birthdate'] . '</div>';
-            echo '<div class="student-info has-text-align-center">'                 . $data['class'] . 'th class</div>';
-            echo '<div class="student-info has-text-align-center">Profile status: ' .  $activity . '</div>';
+            if( get_option('show_country') ) echo '<div class="student-info has-text-align-center">Lives in '            . $data['lives_in'];
+            if( get_option('show_address') ) echo '<div class="student-info has-text-align-center">Current address is  ' . $data['address'];
+            if( get_option('show_birthdate') ) echo '<div class="student-info has-text-align-center">Born on '           . $data['birthdate'] . '</div>';
+            if( get_option('show_class') ) echo '<div class="student-info has-text-align-center">'                       . $data['class'] . 'th class</div>';
+            if( get_option('show_status') ) echo '<div class="student-info has-text-align-center">Profile status: '      .  $activity . '</div>';
 
 		}
 	}

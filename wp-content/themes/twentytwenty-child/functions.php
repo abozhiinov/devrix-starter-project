@@ -71,6 +71,12 @@ function add_profile_settings( $items ) {
 }
 add_filter( 'menu_items', 'add_profile_settings' );
 
+function add_student_admin( $items ) {
+    $items .= '<li><a href=' . admin_url('admin.php?page=student-administration') . '>Administration</a></li>';
+    return $items;
+}
+add_filter( 'menu_items', 'add_student_admin', 9 );
+
 
 function email_on_update( $user_id, $old_user_data ) {
     $to = get_bloginfo( 'admin_email' );
@@ -191,6 +197,86 @@ function pagination( $paged = '', $max_page = '' ) {
         'prev_text'  => __( '<' ),
         'next_text'  => __( '>' ),
     ) );
+}
+ 
+function register_student_administration() {
+    add_menu_page(
+        'Students',
+        'Students',
+        'manage_options',
+        'student-administration',
+        'student_administration_callback' );
+}
+add_action( 'admin_menu', 'register_student_administration' );
+ 
+function student_administration_callback() {
+    update_students_settings();
+    echo '<div class="wrap">' . '<h2>Students Administration</h2>' . '</div>' . '<form method="post">';
+    settings_fields( 'student-administration' );
+    do_settings_sections( 'student-administration' );
+}
+
+function country_register_settings() {
+    add_settings_section( 'students', 'Display Settings', null, 'student-administration' );
+
+    add_settings_field( 'show_country'   , 'Show country:'        , 'show_checkbox_country'  , 'student-administration', 'students' );
+    add_settings_field( 'show_address'   , 'Show address:'        , 'show_checkbox_address'  , 'student-administration', 'students' );
+    add_settings_field( 'show_birthdate' , 'Show birthdate:'      , 'show_checkbox_birthdate', 'student-administration', 'students' );
+    add_settings_field( 'show_class'     , 'Show class:'          , 'show_checkbox_class'    , 'student-administration', 'students' );
+    add_settings_field( 'show_status'    , 'Show activity status:', 'show_checkbox_status'   , 'student-administration', 'students' );
+    add_settings_field( 'submit_setts'   , ''                     , 'show_submit'            , 'student-administration', 'students' );
+
+    register_setting( 'student-administration', 'show_country' );
+    register_setting( 'student-administration', 'show_address' );
+    register_setting( 'student-administration', 'show_birthdate' );
+    register_setting( 'student-administration', 'show_class' );
+    register_setting( 'student-administration', 'show_status' );
+    register_setting( 'student-administration', 'submit_setts' );
+}
+add_action( 'admin_init', 'country_register_settings' );
+
+function show_checkbox_country() {
+    $checked = '';
+    if( get_option( "show_country" ) == 1 ) $checked = 'checked';
+    echo '<input type="checkbox" name="country_box" value="1"  ' . $checked . '  />';
+}
+
+function show_checkbox_address() {
+    $checked = '';
+    if( get_option( "show_address" ) == 1 ) $checked = 'checked';
+    echo '<input type="checkbox" name="address_box" value="1"  ' . $checked . '  />';
+}
+
+function show_checkbox_birthdate() {
+    $checked = '';
+    if( get_option( "show_birthdate" ) == 1 ) $checked = 'checked';
+    echo '<input type="checkbox" name="birthdate_box" value="1"  ' . $checked . '  />';
+}
+
+function show_checkbox_class() {
+    $checked = '';
+    if( get_option( "show_class" ) == 1 ) $checked = 'checked';
+    echo '<input type="checkbox" name="class_box" value="1"  ' . $checked . '  />';
+}
+
+function show_checkbox_status() {
+    $checked = '';
+    if( get_option( "show_status" ) == 1 ) $checked = 'checked';
+    echo '<input type="checkbox" name="status_box" value="1"  ' . $checked . '  />';
+}
+
+function show_submit() {
+    submit_button( 'Save Settings' );
+}
+
+function update_students_settings() { 
+    if( isset($_POST['submit']) ) {
+        !empty($_POST['country_box'])   ? update_option('show_country', 1)   : update_option('show_country', 0);
+        !empty($_POST['address_box'])   ? update_option('show_address', 1)   : update_option('show_address', 0);
+        !empty($_POST['birthdate_box']) ? update_option('show_birthdate', 1) : update_option('show_birthdate', 0);
+        !empty($_POST['class_box'])     ? update_option('show_class', 1)     : update_option('show_class', 0);
+        !empty($_POST['status_box'])    ? update_option('show_status', 1)    : update_option('show_status', 0);
+    }
 }
 
 // END ENQUEUE PARENT ACTION
