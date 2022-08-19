@@ -25,7 +25,7 @@ get_header();
             the_content(); 
             the_author();
 
-			//get_template_part( 'template-parts/singular' );
+            do_action( 'custom_action_hook' );
 
 		}
 	} else {
