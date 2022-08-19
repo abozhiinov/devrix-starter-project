@@ -59,24 +59,28 @@ function add_custom_menu_item ( $items, $args ) {
 }
 add_filter( 'wp_nav_menu_items', 'add_custom_menu_item', 10, 2 );
 
+/* Adds 'Students Archive' page to the menu */
 function add_students_archive( $items ) {
     $items .= '<li><a href=' . home_url( '/student' ) . '>Students Archive</a></li>';
     return $items;
 }
 add_filter( 'menu_items', 'add_students_archive' );
 
+/* Adds 'Students Administration' panel to the menu */
 function add_student_admin( $items ) {
     $items .= '<li><a href=' . admin_url('admin.php?page=student-administration') . '>Administration</a></li>';
     return $items;
 }
 add_filter( 'menu_items', 'add_student_admin');
 
+/* Adds 'Profile Settings' panel to the menu */
 function add_profile_settings( $items ) {
     $items .= '<li><a href=' . admin_url('profile.php') . '>Profile Settings</a></li>';
     return $items;
 }
 add_filter( 'menu_items', 'add_profile_settings' );
 
+/* Sends email every time a profile update is made */
 function email_on_update( $user_id, $old_user_data ) {
     $to = get_bloginfo( 'admin_email' );
     $subject = 'Update';
@@ -87,14 +91,15 @@ function email_on_update( $user_id, $old_user_data ) {
 }
 add_action( 'profile_update', 'email_on_update', 10, 2 );
 
+/* Get custom settings info from the DB */
 function get_student_info( $post_id ) {
 
-    if( empty( $post_id ) ) return; // Check if it has an ID to work on
+    if( empty( $post_id ) ) return;
 
-    $data = array(); // Create an empty array for needed data
-    $info = get_post_meta( $post_id ); // Get needed data using the get_post_meta() function
+    $data = array();
+    $info = get_post_meta( $post_id );
     
-    if( !empty($info) && is_array($info) ) { // Fill the data in the array
+    if( !empty($info) && is_array($info) ) { 
         $data['lives_in']  = !empty( $info['lives_in'] )  ? esc_html( $info['lives_in'][0] )  : '';
         $data['address']   = !empty( $info['address'] )   ? esc_html( $info['address'][0] )   : '';
         $data['birthdate'] = !empty( $info['birthdate'] ) ? esc_html( $info['birthdate'][0] ) : '';
@@ -105,52 +110,44 @@ function get_student_info( $post_id ) {
     return $data;
 }
 
+/* Callback function with the HTML box for the custom settings */
 function student_custom_box_html( $post ) {
-    $data = array(
-        'lives_in'  => '',
-        'address'   => '',
-        'birthdate' => '',
-        'class'     => '',
-        'status'    => ''
-    );
-    if(!empty(get_the_ID())){
-        $data = get_student_info(get_the_ID());
-    }
+    $data = array();
+    if( ! empty( get_the_ID() ) ) $data = get_student_info( get_the_ID() );
     ?>
-    <form method="post">
-        <div>
-            <label for="location_field">Lives In (Country, City)</label></br>
-            <input name="lives_in" class="postbox" value="<?php echo $data['lives_in']; ?>"/>
-        </div>
-        <div>
-            <label for="address_field">Address</label></br>
-            <input name="address" class="postbox" value="<?php echo $data['address']; ?>"/>
-        </div>
-        <div>
-            <label for="birthdate_field">Birthdate</label></br>
-            <input type="date" name="birthdate" class="postbox" value="<?php echo $data['birthdate']; ?>"/>
-        </div>
-        <div>
-            <label for="class_field">Class / Grade</label></br>
-            <select name="class" class="postbox" value="<?php echo $data['class']; ?>">
-                <option value="8"  <?php if($data['class'] == 8)  { ?> selected <?php } ?>>8th</option>
-                <option value="9"  <?php if($data['class'] == 9)  { ?> selected <?php } ?>>9th</option>
-                <option value="10" <?php if($data['class'] == 10) { ?> selected <?php } ?>>10th</option>
-                <option value="11" <?php if($data['class'] == 11) { ?> selected <?php } ?>>11th</option>
-                <option value="12" <?php if($data['class'] == 12) { ?> selected <?php } ?>>12th</option>
-            </select>
-        </div>
-        <div>
-            <label for="activity">Activity Status </label></br>
-            <select name="status" class="postbox" value="<?php echo $data['status']; ?>">
-                <option value="1" <?php if($data['status'] == 1) { ?> selected <?php } ?>>Active</option>
-                <option value="0" <?php if($data['status'] == 0) { ?> selected <?php } ?>>Inactive</option>
-            </select>
-        </div>
-    </form>
+    <div>
+        <label for="location_field">Lives In (Country, City)</label></br>
+        <input name="lives_in" class="postbox" value="<?php echo $data['lives_in']; ?>"/>
+    </div>
+    <div>
+        <label for="address_field">Address</label></br>
+        <input name="address" class="postbox" value="<?php echo $data['address']; ?>"/>
+    </div>
+    <div>
+        <label for="birthdate_field">Birthdate</label></br>
+        <input type="date" name="birthdate" class="postbox" value="<?php echo $data['birthdate']; ?>"/>
+    </div>
+    <div>
+        <label for="class_field">Class / Grade</label></br>
+        <select name="class" class="postbox" value="<?php echo $data['class']; ?>">
+            <option value="8"  <?php if( $data['class'] == 8 )  { ?> selected <?php } ?>>8th</option>
+            <option value="9"  <?php if( $data['class'] == 9 )  { ?> selected <?php } ?>>9th</option>
+            <option value="10" <?php if( $data['class'] == 10 ) { ?> selected <?php } ?>>10th</option>
+            <option value="11" <?php if( $data['class'] == 11 ) { ?> selected <?php } ?>>11th</option>
+            <option value="12" <?php if( $data['class'] == 12 ) { ?> selected <?php } ?>>12th</option>
+        </select>
+    </div>
+    <div>
+        <label for="activity">Activity Status </label></br>
+        <select name="status" class="postbox" value="<?php echo $data['status']; ?>">
+            <option value="1" <?php if( $data['status'] == 1 ) { ?> selected <?php } ?>>Active</option>
+            <option value="0" <?php if( $data['status'] == 0 ) { ?> selected <?php } ?>>Inactive</option>
+        </select>
+    </div>
     <?php 
 }
 
+/* Adds the meta box to the edit page of the post type 'student' */
 function student_add_custom_box() {
         add_meta_box(
             'student_box_id',
@@ -161,6 +158,7 @@ function student_add_custom_box() {
 }
 add_action( 'add_meta_boxes', 'student_add_custom_box' );
 
+/* Sanitize and update personal data in the DB */
 function save_meta_function( $post_id ) {
     $lives_in  = sanitize_text_field( $_POST['lives_in'] );
     $address   = sanitize_text_field( $_POST['address'] );
@@ -176,6 +174,7 @@ function save_meta_function( $post_id ) {
 }
 add_action( 'save_post', 'save_meta_function', 10 );
 
+/* Pagination function */
 function pagination( $paged = '', $max_page = '' ) {
     $big = 999999999;
     if( ! $paged ) {
@@ -197,7 +196,8 @@ function pagination( $paged = '', $max_page = '' ) {
         'next_text'  => __( '>' ),
     ) );
 }
- 
+
+/* Add custom top-level menu page */
 function register_student_administration() {
     add_menu_page(
         'Students',
@@ -207,7 +207,8 @@ function register_student_administration() {
         'student_administration_callback' );
 }
 add_action( 'admin_menu', 'register_student_administration' );
- 
+
+/* Callback func for the menu page */
 function student_administration_callback() {
     update_students_settings();
     echo '<div class="wrap">' . '<h2>Students Administration</h2>' . '</div>' . '<form method="post">';
@@ -215,7 +216,8 @@ function student_administration_callback() {
     do_settings_sections( 'student-administration' );
 }
 
-function country_register_settings() {
+/* Add custom settings to the new settings page */
+function register_settings() {
     add_settings_section( 'students', 'Display Settings', null, 'student-administration' );
 
     add_settings_field( 'show_country'   , 'Show country:'        , 'show_checkbox_country'  , 'student-administration', 'students' );
@@ -232,8 +234,9 @@ function country_register_settings() {
     register_setting( 'student-administration', 'show_status' );
     register_setting( 'student-administration', 'submit_setts' );
 }
-add_action( 'admin_init', 'country_register_settings' );
+add_action( 'admin_init', 'register_settings' );
 
+/* Callback for a custom setting */
 function show_checkbox_country() {
     $option  = get_option( 'show_settings' );
     $checked = '';
@@ -241,6 +244,7 @@ function show_checkbox_country() {
     echo '<input type="checkbox" name="country_box" value="1"  ' . $checked . '  />';
 }
 
+/* Callback for a custom setting */
 function show_checkbox_address() {
     $option  = get_option( 'show_settings' );
     $checked = '';
@@ -248,6 +252,7 @@ function show_checkbox_address() {
     echo '<input type="checkbox" name="address_box" value="1"  ' . $checked . '  />';
 }
 
+/* Callback for a custom setting */
 function show_checkbox_birthdate() {
     $option  = get_option( 'show_settings' );
     $checked = '';
@@ -255,6 +260,7 @@ function show_checkbox_birthdate() {
     echo '<input type="checkbox" name="birthdate_box" value="1"  ' . $checked . '  />';
 }
 
+/* Callbackfor a custom setting */
 function show_checkbox_class() {
     $option  = get_option( 'show_settings' );
     $checked = '';
@@ -262,6 +268,7 @@ function show_checkbox_class() {
     echo '<input type="checkbox" name="class_box" value="1"  ' . $checked . '  />';
 }
 
+/* Callback for a custom setting */
 function show_checkbox_status() {
     $option  = get_option( 'show_settings' );
     $checked = '';
@@ -273,6 +280,7 @@ function show_submit() {
     submit_button( 'Save Settings' );
 }
 
+/* Update showability of the student's personal information */
 function update_students_settings() { 
     if( isset( $_POST['submit'] ) ) {
         $options                   = get_option( 'show_settings' );

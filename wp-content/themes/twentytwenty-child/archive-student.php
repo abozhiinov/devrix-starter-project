@@ -13,7 +13,7 @@ get_header(); ?>
 
 <header class="archive-header has-text-align-center header-footer-group">
     <div class="archive-header-inner section-inner medium">
-        <h1 class="archive-title"><a href=<?php echo home_url( '/student' );?>>Students Archive</a></h1>
+        <h1 class="archive-title"><a href=<?php get_post_type_archive_link( 'student' );?>>Students Archive</a></h1>
     </div>
 </header>
 
@@ -21,7 +21,7 @@ get_header(); ?>
     <div id="content" role="main" class="archive-header-inner section-inner medium">
  
     <?php 
-    $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+    $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
     $args = array(
         'post_type'  => 'student',
         'meta_key'   => 'status',
@@ -37,8 +37,8 @@ get_header(); ?>
         <?php
             $query->the_post();
             
-            $title = str_replace(' ','-', strtolower(get_the_title()));
-            echo '<a href=' . home_url($title) . ' class="student-name">' . get_the_title() . '</a>';
+            $title = str_replace( ' ','-', strtolower( get_the_title() ) );
+            echo '<a href=' . home_url( $title ) . ' class="student-name">' . get_the_title() . '</a>';
 
             echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
         ?>

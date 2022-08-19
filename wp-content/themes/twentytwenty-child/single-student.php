@@ -25,14 +25,16 @@ get_header();
 
             echo '<div class="has-text-align-center">' . get_the_excerpt() . '</div>';
             
-            $data = get_student_info(get_the_ID());
-            foreach($data as $d) : 
-                esc_html($d);
+            $data = get_student_info( get_the_ID() );
+
+            foreach( $data as $d ) : 
+                esc_html( $d );
             endforeach;
-            if($data['status'] == 1) $activity = "Active";
-            else                     $activity = "Inactive";
+
+            $activity = "Inactive";
+            if( $data['status'] == 1 ) $activity = "Active";
              
-            $options = get_option('show_settings');
+            $options = get_option( 'show_settings' );
             if( $options['show_country'] ) echo '<div class="student-info has-text-align-center">Lives in '            . $data['lives_in'];
             if( $options['show_address'] ) echo '<div class="student-info has-text-align-center">Current address is  ' . $data['address'];
             if( $options['show_birthdate'] ) echo '<div class="student-info has-text-align-center">Born on '           . $data['birthdate'] . '</div>';
