@@ -22,6 +22,12 @@ if ( !function_exists( 'chld_thm_cfg_parent_css' ) ):
 endif;
 add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css', 10 );
 
+function ajax_scripts_method() {
+    wp_enqueue_script( 'student-ajax', get_stylesheet_directory_uri() . '/settings-student.js', array( 'jquery' ) );
+    wp_localize_script( 'student-ajax', 'my_ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+}
+add_action( 'admin_enqueue_scripts', 'ajax_scripts_method' );
+
 function add_my_filter( $content ) {
     $content = _e( apply_filters( 'custom_filter_change', "This is my filter" )) . $content;
     return $content;
@@ -260,7 +266,7 @@ function show_checkbox_birthdate() {
     echo '<input type="checkbox" name="birthdate_box" value="1"  ' . $checked . '  />';
 }
 
-/* Callbackfor a custom setting */
+/* Callback for a custom setting */
 function show_checkbox_class() {
     $option  = get_option( 'show_settings' );
     $checked = '';
@@ -273,7 +279,7 @@ function show_checkbox_status() {
     $option  = get_option( 'show_settings' );
     $checked = '';
     if( $option["show_status"] == 1 ) $checked = 'checked';
-    echo '<input type="checkbox" name="status_box" value="1"  ' . $checked . '  />';
+    echo '<input type="checkbox" name="status_box" value="1" ' . $checked . '  />';
 }
 
 function show_submit() {
@@ -292,5 +298,95 @@ function update_students_settings() {
         update_option( 'show_settings', $options );
     }
 }
+
+/** 
+ *  Add custom sub menu page 
+ */
+function ajax_student_administration() {
+    add_submenu_page(
+        'student-administration',
+        'AJAX Students',
+        'AJAX Students',
+        'manage_options',
+        'ajax-student-administration',
+        'ajax_admin_callback' );
+}
+add_action( 'admin_menu', 'ajax_student_administration' );
+
+function ajax_admin_callback() {
+    update_students_settings();
+    echo '<div class="wrap">' . '<h2>AJAX Students Administration</h2>' . '</div>' . '<form method="post">';
+    settings_fields( 'ajax-student-administration' );
+    do_settings_sections( 'ajax-student-administration' );
+}
+
+/* Add custom settings to the new settings page */
+function ajax_register_settings() {
+    add_settings_section( 'students', 'Display Settings', null, 'ajax-student-administration' );
+
+    add_settings_field( 'show_country'   , 'Show country:'        , 'show_checkbox_country_ajax'  , 'ajax-student-administration', 'students' );
+    add_settings_field( 'show_address'   , 'Show address:'        , 'show_checkbox_address_ajax'  , 'ajax-student-administration', 'students' );
+    add_settings_field( 'show_birthdate' , 'Show birthdate:'      , 'show_checkbox_birthdate_ajax', 'ajax-student-administration', 'students' );
+    add_settings_field( 'show_class'     , 'Show class:'          , 'show_checkbox_class_ajax'    , 'ajax-student-administration', 'students' );
+    add_settings_field( 'show_status'    , 'Show activity status:', 'show_checkbox_status_ajax'   , 'ajax-student-administration', 'students' );
+
+    register_setting( 'ajax-student-administration', 'show_country' );
+    register_setting( 'ajax-student-administration', 'show_address' );
+    register_setting( 'ajax-student-administration', 'show_birthdate' );
+    register_setting( 'ajax-student-administration', 'show_class' );
+    register_setting( 'ajax-student-administration', 'show_status' );
+}
+add_action( 'admin_init', 'ajax_register_settings' );
+
+/* Callback for a custom setting */
+function show_checkbox_country_ajax() {
+    $options = get_option( 'show_ajax_settings' );
+    $checked = '';
+    if( $options["show_country"] == 1 ) $checked = 'checked';
+    echo '<input type="checkbox" id="show_country" name="country_box_ajax" value="1" ' . $checked . '  />';
+}
+
+/* Callback for a custom setting */
+function show_checkbox_address_ajax() {
+    $options = get_option( 'show_ajax_settings' );
+    $checked = '';
+    if( $options["show_address"] == 1 ) $checked = 'checked';
+    echo '<input type="checkbox" id="show_address" name="address_box_ajax" value="1" ' . $checked . '  />';
+}
+
+/* Callback for a custom setting */
+function show_checkbox_birthdate_ajax() {
+    $options = get_option( 'show_ajax_settings' );
+    $checked = '';
+    if( $options["show_birthdate"] == 1 ) $checked = 'checked';
+    echo '<input type="checkbox" id="show_birthdate" name="birthdate_box_ajax" value="1" ' . $checked . '  />';
+}
+
+/* Callback for a custom setting */
+function show_checkbox_class_ajax() {
+    $options = get_option( 'show_ajax_settings' );
+    $checked = '';
+    if( $options["show_class"] == 1 ) $checked = 'checked';
+    echo '<input type="checkbox" id="show_class" name="class_box_ajax" value="1" ' . $checked . '  />';
+}
+
+/* Callback for a custom setting */
+function show_checkbox_status_ajax() {
+    $options = get_option( 'show_ajax_settings' );
+    $checked = '';
+    if( $options["show_status"] == 1 ) $checked = 'checked';
+    echo '<input type="checkbox" id="show_status" name="status_box_ajax" value="1" ' . $checked . '  /> </form>';
+}
+
+function ajax_func() {
+    $options = get_option( 'show_ajax_settings' );
+    $options[$_POST['option']] = 0;
+    if($_POST['checked'] === 'true') {
+        $options[$_POST['option']] = 1;
+    }
+    update_option('show_ajax_settings', $options);
+}
+add_action( 'wp_ajax_nopriv_ajax_func', 'ajax_func' );
+add_action( 'wp_ajax_ajax_func', 'ajax_func' );
 
 // END ENQUEUE PARENT ACTION
