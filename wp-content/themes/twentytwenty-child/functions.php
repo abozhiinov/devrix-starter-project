@@ -65,18 +65,17 @@ function add_students_archive( $items ) {
 }
 add_filter( 'menu_items', 'add_students_archive' );
 
+function add_student_admin( $items ) {
+    $items .= '<li><a href=' . admin_url('admin.php?page=student-administration') . '>Administration</a></li>';
+    return $items;
+}
+add_filter( 'menu_items', 'add_student_admin');
+
 function add_profile_settings( $items ) {
     $items .= '<li><a href=' . admin_url('profile.php') . '>Profile Settings</a></li>';
     return $items;
 }
 add_filter( 'menu_items', 'add_profile_settings' );
-
-function add_student_admin( $items ) {
-    $items .= '<li><a href=' . admin_url('admin.php?page=student-administration') . '>Administration</a></li>';
-    return $items;
-}
-add_filter( 'menu_items', 'add_student_admin', 9 );
-
 
 function email_on_update( $user_id, $old_user_data ) {
     $to = get_bloginfo( 'admin_email' );
@@ -236,32 +235,37 @@ function country_register_settings() {
 add_action( 'admin_init', 'country_register_settings' );
 
 function show_checkbox_country() {
+    $option  = get_option( 'show_settings' );
     $checked = '';
-    if( get_option( "show_country" ) == 1 ) $checked = 'checked';
+    if( $option["show_country"] == 1 ) $checked = 'checked';
     echo '<input type="checkbox" name="country_box" value="1"  ' . $checked . '  />';
 }
 
 function show_checkbox_address() {
+    $option  = get_option( 'show_settings' );
     $checked = '';
-    if( get_option( "show_address" ) == 1 ) $checked = 'checked';
+    if( $option["show_address"] == 1 ) $checked = 'checked';
     echo '<input type="checkbox" name="address_box" value="1"  ' . $checked . '  />';
 }
 
 function show_checkbox_birthdate() {
+    $option  = get_option( 'show_settings' );
     $checked = '';
-    if( get_option( "show_birthdate" ) == 1 ) $checked = 'checked';
+    if( $option["show_birthdate"] == 1 ) $checked = 'checked';
     echo '<input type="checkbox" name="birthdate_box" value="1"  ' . $checked . '  />';
 }
 
 function show_checkbox_class() {
+    $option  = get_option( 'show_settings' );
     $checked = '';
-    if( get_option( "show_class" ) == 1 ) $checked = 'checked';
+    if( $option["show_class"] == 1 ) $checked = 'checked';
     echo '<input type="checkbox" name="class_box" value="1"  ' . $checked . '  />';
 }
 
 function show_checkbox_status() {
+    $option  = get_option( 'show_settings' );
     $checked = '';
-    if( get_option( "show_status" ) == 1 ) $checked = 'checked';
+    if( $option["show_status"] == 1 ) $checked = 'checked';
     echo '<input type="checkbox" name="status_box" value="1"  ' . $checked . '  />';
 }
 
@@ -270,12 +274,14 @@ function show_submit() {
 }
 
 function update_students_settings() { 
-    if( isset($_POST['submit']) ) {
-        !empty($_POST['country_box'])   ? update_option('show_country', 1)   : update_option('show_country', 0);
-        !empty($_POST['address_box'])   ? update_option('show_address', 1)   : update_option('show_address', 0);
-        !empty($_POST['birthdate_box']) ? update_option('show_birthdate', 1) : update_option('show_birthdate', 0);
-        !empty($_POST['class_box'])     ? update_option('show_class', 1)     : update_option('show_class', 0);
-        !empty($_POST['status_box'])    ? update_option('show_status', 1)    : update_option('show_status', 0);
+    if( isset( $_POST['submit'] ) ) {
+        $options                   = get_option( 'show_settings' );
+        $options['show_country']   = ! empty( $_POST['country_box'] )   ? 1 : 0;
+        $options['show_address']   = ! empty( $_POST['address_box'] )   ? 1 : 0;
+        $options['show_birthdate'] = ! empty( $_POST['birthdate_box'] ) ? 1 : 0;
+        $options['show_class']     = ! empty( $_POST['class_box'] )     ? 1 : 0;
+        $options['show_status']    = ! empty( $_POST['status_box'] )    ? 1 : 0;
+        update_option( 'show_settings', $options );
     }
 }
 
