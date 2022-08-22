@@ -543,8 +543,12 @@ function show_dictionary_search() {
     </form> <div class="result-data"> </div>'; 
 }
 
+/** 
+ * Function executed by AJAX to remotely get data from Oxford Dictionary
+ * */
 function search_oxford_dictionary(){
-    $result = wp_remote_get( 'https://www.oxfordlearnersdictionaries.com/definition/english/' . sanitize_text_field( $_POST['word'] ) );
+
+    $result = wp_remote_get( 'https://www.oxfordlearnersdictionaries.com/definition/english/' . sanitize_title_with_dashes( $_POST['word'] ) );
     echo $result['body'];
 }
 add_action( 'wp_ajax_nopriv_search_oxford_dictionary', 'search_oxford_dictionary' );
