@@ -2,6 +2,9 @@
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) exit;
 
+$master_modified_time = filemtime( get_theme_file_path());
+define( 'DX_ASSETS_VERSION', $master_modified_time . '-0000' );
+
 // BEGIN ENQUEUE PARENT ACTION
 // AUTO GENERATED - Do not modify or remove comment markers above or below:
 
@@ -23,7 +26,7 @@ endif;
 add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css', 10 );
 
 function ajax_scripts_method() {
-    wp_enqueue_script( 'student-ajax', get_stylesheet_directory_uri() . '/settings-student.js', array( 'jquery' ) );
+    wp_enqueue_script( 'student-ajax', get_stylesheet_directory_uri() . '/settings-student.js', array( 'jquery' ), DX_ASSETS_VERSION);
     wp_localize_script( 'student-ajax', 'my_ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 }
 add_action( 'admin_enqueue_scripts', 'ajax_scripts_method' );
@@ -65,28 +68,36 @@ function add_custom_menu_item ( $items, $args ) {
 }
 add_filter( 'wp_nav_menu_items', 'add_custom_menu_item', 10, 2 );
 
-/* Adds 'Students Archive' page to the menu */
+/** 
+ * Adds 'Students Archive' page to the menu 
+ * */
 function add_students_archive( $items ) {
     $items .= '<li><a href=' . home_url( '/student' ) . '>Students Archive</a></li>';
     return $items;
 }
 add_filter( 'menu_items', 'add_students_archive' );
 
-/* Adds 'Students Administration' panel to the menu */
+/**
+ * Adds 'Students Administration' panel to the menu 
+ * */
 function add_student_admin( $items ) {
     $items .= '<li><a href=' . admin_url('admin.php?page=student-administration') . '>Administration</a></li>';
     return $items;
 }
 add_filter( 'menu_items', 'add_student_admin');
 
-/* Adds 'Profile Settings' panel to the menu */
+/**
+ * Adds 'Profile Settings' panel to the menu 
+ * */
 function add_profile_settings( $items ) {
     $items .= '<li><a href=' . admin_url('profile.php') . '>Profile Settings</a></li>';
     return $items;
 }
 add_filter( 'menu_items', 'add_profile_settings' );
 
-/* Sends email every time a profile update is made */
+/** 
+ * Sends email every time a profile update is made 
+ * */
 function email_on_update( $user_id, $old_user_data ) {
     $to = get_bloginfo( 'admin_email' );
     $subject = 'Update';
@@ -97,7 +108,9 @@ function email_on_update( $user_id, $old_user_data ) {
 }
 add_action( 'profile_update', 'email_on_update', 10, 2 );
 
-/* Get custom settings info from the DB */
+/** 
+ * Get custom settings info from the DB 
+ * */
 function get_student_info( $post_id ) {
 
     if( empty( $post_id ) ) return;
@@ -116,7 +129,9 @@ function get_student_info( $post_id ) {
     return $data;
 }
 
-/* Callback function with the HTML box for the custom settings */
+/** 
+ * Callback function with the HTML box for the custom settings 
+ * */
 function student_custom_box_html( $post ) {
     $data = array();
     if( ! empty( get_the_ID() ) ) $data = get_student_info( get_the_ID() );
@@ -153,7 +168,9 @@ function student_custom_box_html( $post ) {
     <?php 
 }
 
-/* Adds the meta box to the edit page of the post type 'student' */
+/** 
+ * Adds the meta box to the edit page of the post type 'student' 
+ * */
 function student_add_custom_box() {
         add_meta_box(
             'student_box_id',
@@ -164,7 +181,9 @@ function student_add_custom_box() {
 }
 add_action( 'add_meta_boxes', 'student_add_custom_box' );
 
-/* Sanitize and update personal data in the DB */
+/** 
+ * Sanitize and update personal data in the DB 
+ * */
 function save_meta_function( $post_id ) {
     $lives_in  = sanitize_text_field( $_POST['lives_in'] );
     $address   = sanitize_text_field( $_POST['address'] );
@@ -180,7 +199,9 @@ function save_meta_function( $post_id ) {
 }
 add_action( 'save_post', 'save_meta_function', 10 );
 
-/* Pagination function */
+/** 
+ * Pagination function 
+ * */
 function pagination( $paged = '', $max_page = '' ) {
     $big = 999999999;
     if( ! $paged ) {
@@ -203,7 +224,9 @@ function pagination( $paged = '', $max_page = '' ) {
     ) );
 }
 
-/* Add custom top-level menu page */
+/** 
+ * Add custom top-level menu page 
+ * */
 function register_student_administration() {
     add_menu_page(
         'Students',
@@ -214,15 +237,19 @@ function register_student_administration() {
 }
 add_action( 'admin_menu', 'register_student_administration' );
 
-/* Callback func for the menu page */
+/**
+ * Callback func for the menu page
+ * */
 function student_administration_callback() {
     update_students_settings();
-    echo '<div class="wrap">' . '<h2>Students Administration</h2>' . '</div>' . '<form method="post">';
+    echo '<div>' . '<h2>Students Administration</h2>' . '</div>' . ' <form method="post">';
     settings_fields( 'student-administration' );
     do_settings_sections( 'student-administration' );
 }
 
-/* Add custom settings to the new settings page */
+/** 
+ * Add custom settings to the new settings page 
+ * */
 function register_settings() {
     add_settings_section( 'students', 'Display Settings', null, 'student-administration' );
 
@@ -242,7 +269,9 @@ function register_settings() {
 }
 add_action( 'admin_init', 'register_settings' );
 
-/* Callback for a custom setting */
+/**
+ *  Callback for a custom setting
+ *  */
 function show_checkbox_country() {
     $option  = get_option( 'show_settings' );
     $checked = '';
@@ -250,7 +279,9 @@ function show_checkbox_country() {
     echo '<input type="checkbox" name="country_box" value="1"  ' . $checked . '  />';
 }
 
-/* Callback for a custom setting */
+/**
+ *  Callback for a custom setting
+ *  */
 function show_checkbox_address() {
     $option  = get_option( 'show_settings' );
     $checked = '';
@@ -258,7 +289,9 @@ function show_checkbox_address() {
     echo '<input type="checkbox" name="address_box" value="1"  ' . $checked . '  />';
 }
 
-/* Callback for a custom setting */
+/**
+ *  Callback for a custom setting
+ *  */
 function show_checkbox_birthdate() {
     $option  = get_option( 'show_settings' );
     $checked = '';
@@ -266,7 +299,9 @@ function show_checkbox_birthdate() {
     echo '<input type="checkbox" name="birthdate_box" value="1"  ' . $checked . '  />';
 }
 
-/* Callback for a custom setting */
+/**
+ *  Callback for a custom setting
+ *  */
 function show_checkbox_class() {
     $option  = get_option( 'show_settings' );
     $checked = '';
@@ -274,7 +309,9 @@ function show_checkbox_class() {
     echo '<input type="checkbox" name="class_box" value="1"  ' . $checked . '  />';
 }
 
-/* Callback for a custom setting */
+/**
+ *  Callback for a custom setting
+ *  */
 function show_checkbox_status() {
     $option  = get_option( 'show_settings' );
     $checked = '';
@@ -286,7 +323,9 @@ function show_submit() {
     submit_button( 'Save Settings' );
 }
 
-/* Update showability of the student's personal information */
+/**
+ *  Update showability of the student's personal information
+ * */
 function update_students_settings() { 
     if( isset( $_POST['submit'] ) ) {
         $options                   = get_option( 'show_settings' );
@@ -315,12 +354,14 @@ add_action( 'admin_menu', 'ajax_student_administration' );
 
 function ajax_admin_callback() {
     update_students_settings();
-    echo '<div class="wrap">' . '<h2>AJAX Students Administration</h2>' . '</div>' . '<form method="post">';
+    echo '<div class="wrap">' . '<h2>AJAX Students Administration</h2>' . '</div>' . '<div class="ajax-wrap"> <form method="post">';
     settings_fields( 'ajax-student-administration' );
     do_settings_sections( 'ajax-student-administration' );
 }
 
-/* Add custom settings to the new settings page */
+/**
+ *  Add custom settings to the new settings page 
+ * */
 function ajax_register_settings() {
     add_settings_section( 'students', 'Display Settings', null, 'ajax-student-administration' );
 
@@ -338,7 +379,9 @@ function ajax_register_settings() {
 }
 add_action( 'admin_init', 'ajax_register_settings' );
 
-/* Callback for a custom setting */
+/**
+ *  Callback for a custom setting
+ *  */
 function show_checkbox_country_ajax() {
     $options = get_option( 'show_ajax_settings' );
     $checked = '';
@@ -346,7 +389,9 @@ function show_checkbox_country_ajax() {
     echo '<input type="checkbox" id="show_country" name="country_box_ajax" value="1" ' . $checked . '  />';
 }
 
-/* Callback for a custom setting */
+/**
+ *  Callback for a custom setting 
+ * */
 function show_checkbox_address_ajax() {
     $options = get_option( 'show_ajax_settings' );
     $checked = '';
@@ -354,7 +399,9 @@ function show_checkbox_address_ajax() {
     echo '<input type="checkbox" id="show_address" name="address_box_ajax" value="1" ' . $checked . '  />';
 }
 
-/* Callback for a custom setting */
+/**
+ *  Callback for a custom setting 
+ * */
 function show_checkbox_birthdate_ajax() {
     $options = get_option( 'show_ajax_settings' );
     $checked = '';
@@ -362,7 +409,9 @@ function show_checkbox_birthdate_ajax() {
     echo '<input type="checkbox" id="show_birthdate" name="birthdate_box_ajax" value="1" ' . $checked . '  />';
 }
 
-/* Callback for a custom setting */
+/**
+ *  Callback for a custom setting 
+ * */
 function show_checkbox_class_ajax() {
     $options = get_option( 'show_ajax_settings' );
     $checked = '';
@@ -370,23 +419,135 @@ function show_checkbox_class_ajax() {
     echo '<input type="checkbox" id="show_class" name="class_box_ajax" value="1" ' . $checked . '  />';
 }
 
-/* Callback for a custom setting */
+/** 
+ * Callback for a custom setting 
+ * */
 function show_checkbox_status_ajax() {
     $options = get_option( 'show_ajax_settings' );
     $checked = '';
     if( $options["show_status"] == 1 ) $checked = 'checked';
-    echo '<input type="checkbox" id="show_status" name="status_box_ajax" value="1" ' . $checked . '  /> </form>';
+    echo '<input type="checkbox" id="show_status" name="status_box_ajax" value="1" ' . $checked . '  /> </div> </form>';
 }
 
+/**
+ *  Function executed by AJAX when a checkbox is un/checked on the settings page 
+ * */
 function ajax_func() {
     $options = get_option( 'show_ajax_settings' );
-    $options[$_POST['option']] = 0;
-    if($_POST['checked'] === 'true') {
+    $options[ $_POST['option'] ] = 0;
+    if( $_POST['checked'] === 'true' ) {
         $options[$_POST['option']] = 1;
     }
-    update_option('show_ajax_settings', $options);
+    update_option( 'show_ajax_settings', $options );
 }
 add_action( 'wp_ajax_nopriv_ajax_func', 'ajax_func' );
 add_action( 'wp_ajax_ajax_func', 'ajax_func' );
+
+/** 
+ * Add a column for the activity status on the student dashboard 
+ * */
+function add_student_columns( $columns ) {
+    return array_merge( $columns, array( 'Active' => __( 'Active' ) ) );
+}
+add_filter('manage_student_posts_columns' , 'add_student_columns');
+
+/**
+ * Print the activity checkboxes on the dashboard
+ *  */ 
+function print_extra_columns() { 
+    $meta = get_post_meta( get_the_ID() );
+    $checked = '';
+    if( $meta["status"][0] == 1 ) $checked = 'checked';
+    echo '<form method="post"> <div > <input type="checkbox" class="student-status" id="' . get_the_ID() . '" name="status" value="1" ' . $checked . '  /> </div> </form>';
+}
+add_action( 'manage_student_posts_custom_column', 'print_extra_columns' );
+
+/**
+ * Make the custom column sortable
+ */
+function sort_student_status( $columns ) {
+    $columns['Active'] = __('status');
+    return $columns;
+}
+add_filter( 'manage_edit-student_sortable_columns', 'sort_student_status' );
+
+/**
+ * Define how to order our sortable custom column
+ */
+function student_status_orderby( $query ) {
+    if( ! is_admin() ) return;
+ 
+    $orderby = $query->get( 'orderby' );
+ 
+    if( 'status' == $orderby ) {
+        $query->set('meta_key','status');
+        $query->set('orderby','meta_value');
+    }
+}
+add_action( 'pre_get_posts', 'student_status_orderby' );
+
+/**
+ * Function executed by AJAX to update activity status
+ */
+function update_student_status(){
+    $status = 0;
+    if( esc_attr( $_POST['checked'] ) === 'true' ) $status = 1;
+    update_post_meta( sanitize_text_field( $_POST['student-id'] ), 'status', $status );
+}
+add_action( 'wp_ajax_nopriv_update_student_status', 'update_student_status' );
+add_action( 'wp_ajax_update_student_status', 'update_student_status' );
+
+/** 
+ * Add custom top-level menu page 
+ * */
+function register_dictionary_menu() {
+    add_menu_page(
+        'Dictionary',
+        'Dictionary',
+        'manage_options',
+        'dictionary',
+        'dictionary_callback' );
+}
+add_action( 'admin_menu', 'register_dictionary_menu' );
+
+/**
+ * Callback func for the menu page
+ * */
+function dictionary_callback() {
+    echo '<div> <h2>Dictionary</h2> </div>';
+    settings_fields( 'dictionary' );
+    do_settings_sections( 'dictionary' );
+}
+
+/** 
+ * Add custom settings to the new settings page 
+ * */
+function register_dictionary_settings() {
+    add_settings_section( 'dictionary', '', null, 'dictionary' );
+
+    add_settings_field( 'dictionary_search'   , 'Search up a word: ', 'show_dictionary_search'  , 'dictionary', 'dictionary' );
+
+    register_setting( 'dictionary', 'dictionary_search' );
+}
+add_action( 'admin_init', 'register_dictionary_settings' );
+
+/** 
+ * Callback for a custom setting 
+ * */
+function show_dictionary_search() {
+    $search = isset($_POST['dictionary-search']) ? sanitize_text_field($_POST['dictionary-search']) : '';
+    echo 
+    '<form method="post" action="' . admin_url('admin.php?page=dictionary') . '"> 
+        <input type="search" class="dictionary-search" name="dictionary-search" placeholder="Search..." value="' . $search . '"> 
+        <input type="submit" class="dictionary-submit"> 
+    </form> <div class="result-data"> </div>'; 
+}
+
+function search_oxford_dictionary(){
+    $result = wp_remote_get( 'https://www.oxfordlearnersdictionaries.com/definition/english/' . sanitize_text_field( $_POST['word'] ) );
+    echo $result['body'];
+}
+add_action( 'wp_ajax_nopriv_search_oxford_dictionary', 'search_oxford_dictionary' );
+add_action( 'wp_ajax_search_oxford_dictionary', 'search_oxford_dictionary' );
 
 // END ENQUEUE PARENT ACTION
