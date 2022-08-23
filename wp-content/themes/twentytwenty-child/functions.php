@@ -19,8 +19,8 @@ add_filter( 'locale_stylesheet_uri', 'chld_thm_cfg_locale_css' );
 
 if ( !function_exists( 'chld_thm_cfg_parent_css' ) ):
     function chld_thm_cfg_parent_css() {
-        wp_enqueue_style( 'chld_thm_cfg_parent', trailingslashit( get_template_directory_uri() ) . 'style.css', array(  ) );
-        wp_enqueue_style( 'chld_thm_cfg_child', trailingslashit( get_stylesheet_directory_uri() ) . 'style.css', array(  ) );
+        wp_enqueue_style( 'chld_thm_cfg_parent', trailingslashit( get_template_directory_uri() ) . 'style.css', array( ) );
+        wp_enqueue_style( 'chld_thm_cfg_child', trailingslashit( get_stylesheet_directory_uri() ) . 'style.css', array( ) );
     }
 endif;
 add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css', 10 );
@@ -32,7 +32,7 @@ function ajax_scripts_method() {
 add_action( 'admin_enqueue_scripts', 'ajax_scripts_method' );
 
 function add_my_filter( $content ) {
-    $content = _e( apply_filters( 'custom_filter_change', "This is my filter" )) . $content;
+    $content = __( apply_filters( 'custom_filter_change', "This is my filter" )) . $content;
     return $content;
 }
 //add_filter( 'the_content', 'add_my_filter', 10 );
@@ -72,7 +72,7 @@ add_filter( 'wp_nav_menu_items', 'add_custom_menu_item', 10, 2 );
  * Adds 'Students Archive' page to the menu 
  * */
 function add_students_archive( $items ) {
-    $items .= '<li><a href=' . home_url( '/student' ) . '>Students Archive</a></li>';
+    $items .= '<li><a href=' . get_post_type_archive_link('student') . '>Students Archive</a></li>';
     return $items;
 }
 add_filter( 'menu_items', 'add_students_archive' );
@@ -132,9 +132,9 @@ function get_student_info( $post_id ) {
 /** 
  * Callback function with the HTML box for the custom settings 
  * */
-function student_custom_box_html( $post ) {
-    $data = array();
-    if( ! empty( get_the_ID() ) ) $data = get_student_info( get_the_ID() );
+function student_custom_box_html() {
+    $id   = get_the_ID();
+    $data =  !empty( $id ) ? get_student_info( $id ) : array() ;
     ?>
     <div>
         <label for="location_field">Lives In (Country, City)</label></br>
@@ -274,8 +274,7 @@ add_action( 'admin_init', 'register_settings' );
  *  */
 function show_checkbox_country() {
     $option  = get_option( 'show_settings' );
-    $checked = '';
-    if( $option["show_country"] == 1 ) $checked = 'checked';
+    $checked = ( $option[ "show_country" ] === 1 ) ? 'checked' : '';
     echo '<input type="checkbox" name="country_box" value="1"  ' . $checked . '  />';
 }
 
@@ -284,8 +283,7 @@ function show_checkbox_country() {
  *  */
 function show_checkbox_address() {
     $option  = get_option( 'show_settings' );
-    $checked = '';
-    if( $option["show_address"] == 1 ) $checked = 'checked';
+    $checked = ( $option[ "show_address" ] === 1 ) ? 'checked' : '';
     echo '<input type="checkbox" name="address_box" value="1"  ' . $checked . '  />';
 }
 
@@ -294,8 +292,7 @@ function show_checkbox_address() {
  *  */
 function show_checkbox_birthdate() {
     $option  = get_option( 'show_settings' );
-    $checked = '';
-    if( $option["show_birthdate"] == 1 ) $checked = 'checked';
+    $checked = ( $option[ "show_birthdate" ] === 1 ) ? 'checked' : '';
     echo '<input type="checkbox" name="birthdate_box" value="1"  ' . $checked . '  />';
 }
 
@@ -304,8 +301,7 @@ function show_checkbox_birthdate() {
  *  */
 function show_checkbox_class() {
     $option  = get_option( 'show_settings' );
-    $checked = '';
-    if( $option["show_class"] == 1 ) $checked = 'checked';
+    $checked = ( $option[ "show_class" ] === 1 ) ? 'checked' : '';
     echo '<input type="checkbox" name="class_box" value="1"  ' . $checked . '  />';
 }
 
@@ -314,8 +310,7 @@ function show_checkbox_class() {
  *  */
 function show_checkbox_status() {
     $option  = get_option( 'show_settings' );
-    $checked = '';
-    if( $option["show_status"] == 1 ) $checked = 'checked';
+    $checked = ( $option[ "show_status" ] === 1 ) ? 'checked' : '';
     echo '<input type="checkbox" name="status_box" value="1" ' . $checked . '  />';
 }
 
@@ -436,18 +431,18 @@ function ajax_func() {
     $options = get_option( 'show_ajax_settings' );
     $options[ $_POST['option'] ] = 0;
     if( $_POST['checked'] === 'true' ) {
-        $options[$_POST['option']] = 1;
+        $options[ $_POST['option'] ] = 1;
     }
     update_option( 'show_ajax_settings', $options );
 }
-add_action( 'wp_ajax_nopriv_ajax_func', 'ajax_func' );
 add_action( 'wp_ajax_ajax_func', 'ajax_func' );
 
 /** 
  * Add a column for the activity status on the student dashboard 
  * */
 function add_student_columns( $columns ) {
-    return array_merge( $columns, array( 'Active' => __( 'Active' ) ) );
+    $columns['Active'] = __( 'Active' );
+    return $columns;
 }
 add_filter('manage_student_posts_columns' , 'add_student_columns');
 
@@ -455,9 +450,9 @@ add_filter('manage_student_posts_columns' , 'add_student_columns');
  * Print the activity checkboxes on the dashboard
  *  */ 
 function print_extra_columns() { 
-    $meta = get_post_meta( get_the_ID() );
-    $checked = '';
-    if( $meta["status"][0] == 1 ) $checked = 'checked';
+    $id   = get_the_ID();
+    $meta = get_post_meta( $id );
+    $checked = ( $meta["status"][0] == 1 ) ? 'checked' : '';
     echo '<form method="post"> <div > <input type="checkbox" class="student-status" id="' . get_the_ID() . '" name="status" value="1" ' . $checked . '  /> </div> </form>';
 }
 add_action( 'manage_student_posts_custom_column', 'print_extra_columns' );
@@ -474,8 +469,12 @@ add_filter( 'manage_edit-student_sortable_columns', 'sort_student_status' );
 /**
  * Define how to order our sortable custom column
  */
-function student_status_orderby( $query ) {
-    if( ! is_admin() ) return;
+function student_status_orderby($query) {
+    $post_type = $query->get( 'post_type' );
+
+    if( !is_admin() || ( $post_type !== 'student' ) ){
+         return;
+    }
  
     $orderby = $query->get( 'orderby' );
  
@@ -490,10 +489,9 @@ add_action( 'pre_get_posts', 'student_status_orderby' );
  * Function executed by AJAX to update activity status
  */
 function update_student_status(){
-    $status = ( esc_attr( $_POST['checked'] ) === 'true' ) ?  1 : 0;
+    $status = ( 'true' === esc_attr( $_POST['checked'] ) ) ?  1 : 0;
     update_post_meta( sanitize_text_field( $_POST['student-id'] ), 'status', $status );
 }
-add_action( 'wp_ajax_nopriv_update_student_status', 'update_student_status' );
 add_action( 'wp_ajax_update_student_status', 'update_student_status' );
 
 /** 
@@ -534,10 +532,10 @@ add_action( 'admin_init', 'register_dictionary_settings' );
  * Callback for a custom setting 
  * */
 function show_dictionary_search() {
-    $body = !empty(get_transient( 'dictionary_transient' )) ? get_transient( 'dictionary_transient' ) : '';
-    $search = isset($_POST['dictionary-search']) ? sanitize_text_field($_POST['dictionary-search']) : '';
+    $body = ! empty ( $result = get_transient( 'dictionary_transient' ) ) ? $result : '';
+    $search = isset( $_POST[ 'dictionary-search' ] ) ? sanitize_text_field( $_POST[ 'dictionary-search' ] ) : '';
     echo 
-    '<form method="post" action="' . admin_url('admin.php?page=dictionary') . '"> 
+    '<form method="post" action="' . admin_url( 'admin.php?page=dictionary' ) . '"> 
         <input type="search" class="dictionary-search" name="dictionary-search" placeholder="Search..." value="' . $search . '"> 
         <input type="submit" class="dictionary-submit"> 
         <div> 
@@ -553,17 +551,17 @@ function show_dictionary_search() {
  * Function executed by AJAX to remotely get data from Oxford Dictionary
  * */
 function search_oxford_dictionary(){
-    $result = wp_remote_get( esc_url('https://www.oxfordlearnersdictionaries.com/definition/english/' . sanitize_title_with_dashes( $_POST['word']) ) );
+    $result = wp_remote_get( esc_url( 'https://www.oxfordlearnersdictionaries.com/definition/english/' . sanitize_title_with_dashes( $_POST[ 'word' ]) ) );
 
-    if( is_wp_error( $result ) ) 
+    if( is_wp_error( $result ) ) {
         return;
+    }
 
     $body = wp_remote_retrieve_body( $result );
-    set_transient('dictionary_transient', $body, sanitize_text_field( $_POST['keep-time'] ) );
+    set_transient('dictionary_transient', $body, sanitize_text_field( $_POST[ 'keep-time' ] ) );
 
     echo $body;
 }
-add_action( 'wp_ajax_nopriv_search_oxford_dictionary', 'search_oxford_dictionary' );
 add_action( 'wp_ajax_search_oxford_dictionary', 'search_oxford_dictionary' );
 
 // END ENQUEUE PARENT ACTION
