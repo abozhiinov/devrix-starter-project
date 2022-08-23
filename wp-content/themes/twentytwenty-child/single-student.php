@@ -34,7 +34,7 @@ get_header();
             $activity = "Inactive";
             if( $data['status'] == 1 ) $activity = "Active";
              
-            $options = get_option( 'show_settings' );
+            $options = get_option( 'show_ajax_settings' );
             if( $options['show_country'] ) echo '<div class="student-info has-text-align-center">Lives in '            . $data['lives_in'];
             if( $options['show_address'] ) echo '<div class="student-info has-text-align-center">Current address is  ' . $data['address'];
             if( $options['show_birthdate'] ) echo '<div class="student-info has-text-align-center">Born on '           . $data['birthdate'] . '</div>';
