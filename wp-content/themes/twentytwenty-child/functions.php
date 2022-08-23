@@ -379,9 +379,7 @@ add_action( 'admin_init', 'ajax_register_settings' );
  *  */
 function show_checkbox_country_ajax() {
     $options = get_option( 'show_ajax_settings' );
-    $checked = '';
-    if( $options["show_country"] == 1 ) $checked = 'checked';
-    echo '<input type="checkbox" id="show_country" name="country_box_ajax" value="1" ' . $checked . '  />';
+    echo '<input type="checkbox" id="show_country" name="country_box_ajax" value="1" ' . checked( $options["show_country"] , true, false )  . '  />';
 }
 
 /**
@@ -389,9 +387,7 @@ function show_checkbox_country_ajax() {
  * */
 function show_checkbox_address_ajax() {
     $options = get_option( 'show_ajax_settings' );
-    $checked = '';
-    if( $options["show_address"] == 1 ) $checked = 'checked';
-    echo '<input type="checkbox" id="show_address" name="address_box_ajax" value="1" ' . $checked . '  />';
+    echo '<input type="checkbox" id="show_address" name="address_box_ajax" value="1" ' . checked( $options["show_address"], true, false ) . '  />';
 }
 
 /**
@@ -399,9 +395,7 @@ function show_checkbox_address_ajax() {
  * */
 function show_checkbox_birthdate_ajax() {
     $options = get_option( 'show_ajax_settings' );
-    $checked = '';
-    if( $options["show_birthdate"] == 1 ) $checked = 'checked';
-    echo '<input type="checkbox" id="show_birthdate" name="birthdate_box_ajax" value="1" ' . $checked . '  />';
+    echo '<input type="checkbox" id="show_birthdate" name="birthdate_box_ajax" value="1" ' . checked( $options["show_birthdate"] , true, false ) . '  />';
 }
 
 /**
@@ -409,9 +403,7 @@ function show_checkbox_birthdate_ajax() {
  * */
 function show_checkbox_class_ajax() {
     $options = get_option( 'show_ajax_settings' );
-    $checked = '';
-    if( $options["show_class"] == 1 ) $checked = 'checked';
-    echo '<input type="checkbox" id="show_class" name="class_box_ajax" value="1" ' . $checked . '  />';
+    echo '<input type="checkbox" id="show_class" name="class_box_ajax" value="1" ' . checked( $options["show_class"] , true, false ) . '  />';
 }
 
 /** 
@@ -419,9 +411,7 @@ function show_checkbox_class_ajax() {
  * */
 function show_checkbox_status_ajax() {
     $options = get_option( 'show_ajax_settings' );
-    $checked = '';
-    if( $options["show_status"] == 1 ) $checked = 'checked';
-    echo '<input type="checkbox" id="show_status" name="status_box_ajax" value="1" ' . $checked . '  /> </div> </form>';
+    echo '<input type="checkbox" id="show_status" name="status_box_ajax" value="1" ' . checked( $options["show_status"] , true, false ) . '  /> </div> </form>';
 }
 
 /**
@@ -563,5 +553,13 @@ function search_oxford_dictionary(){
     echo $body;
 }
 add_action( 'wp_ajax_search_oxford_dictionary', 'search_oxford_dictionary' );
+
+/** 
+ * Creating shortcode for students
+ * */
+function students_shortcode() {
+
+}
+add_shortcode('students', 'students_shortcode');
 
 // END ENQUEUE PARENT ACTION
