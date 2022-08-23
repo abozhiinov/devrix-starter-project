@@ -32,7 +32,8 @@ jQuery(document).ready(function($){
             type: 'POST',
             data: {
                 'action' : 'search_oxford_dictionary',
-                'word' : $('.dictionary-search').val()
+                'word' : $('.dictionary-search').val(),
+                'keep-time' : $('.dictionary-search-time').val()
             },
             success: function(result){ $('.result-data').html(result) }
         });

@@ -534,12 +534,19 @@ add_action( 'admin_init', 'register_dictionary_settings' );
  * Callback for a custom setting 
  * */
 function show_dictionary_search() {
+    $body = !empty(get_transient( 'dictionary_transient' )) ? get_transient( 'dictionary_transient' ) : '';
     $search = isset($_POST['dictionary-search']) ? sanitize_text_field($_POST['dictionary-search']) : '';
     echo 
     '<form method="post" action="' . admin_url('admin.php?page=dictionary') . '"> 
         <input type="search" class="dictionary-search" name="dictionary-search" placeholder="Search..." value="' . $search . '"> 
         <input type="submit" class="dictionary-submit"> 
-    </form> <div class="result-data"> </div>'; 
+        <div> 
+            <label for="search">Keep search for:</label></br>
+            <select class="dictionary-search-time" name="keep-search"> 
+                <option value="10">10 seconds</option>
+            </select> 
+        </div>
+    </form> <div class="result-data"> ' . $body . ' </div>'; 
 }
 
 /** 
@@ -552,6 +559,8 @@ function search_oxford_dictionary(){
         return;
 
     $body = wp_remote_retrieve_body( $result );
+    set_transient('dictionary_transient', $body, sanitize_text_field( $_POST['keep-time'] ) );
+
     echo $body;
 }
 add_action( 'wp_ajax_nopriv_search_oxford_dictionary', 'search_oxford_dictionary' );
