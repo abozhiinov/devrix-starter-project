@@ -38,7 +38,8 @@ get_header(); ?>
             $query->the_post();
             
             $title = str_replace( ' ','-', strtolower( get_the_title() ) );
-            echo '<a href=' . home_url( $title ) . ' class="student-name">' . get_the_title() . '</a>';
+            
+            echo '<div class="student-name"> <a href=' . home_url( $title ) . '>' . get_the_title() . '</a> </div>';
 
             echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
         ?>

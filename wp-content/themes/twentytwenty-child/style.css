@@ -24,6 +24,7 @@ a {
     margin-left: auto;
     margin-right: auto;
     width: 40%;
+    margin-top: 2%;
 }
 
 .student-info {
@@ -33,4 +34,15 @@ a {
 
 .student-box {
     margin-top: 50px;
+}
+
+.nothing-show {
+    font-size: 40px;
+}
+
+.found {
+    color: #cd2653;
+    text-align: right;
+    font-size: 20px;
+    margin-top: 1%;
 }
