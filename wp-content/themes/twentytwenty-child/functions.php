@@ -490,8 +490,7 @@ add_action( 'pre_get_posts', 'student_status_orderby' );
  * Function executed by AJAX to update activity status
  */
 function update_student_status(){
-    $status = 0;
-    if( esc_attr( $_POST['checked'] ) === 'true' ) $status = 1;
+    $status = ( esc_attr( $_POST['checked'] ) === 'true' ) ?  1 : 0;
     update_post_meta( sanitize_text_field( $_POST['student-id'] ), 'status', $status );
 }
 add_action( 'wp_ajax_nopriv_update_student_status', 'update_student_status' );
@@ -547,9 +546,13 @@ function show_dictionary_search() {
  * Function executed by AJAX to remotely get data from Oxford Dictionary
  * */
 function search_oxford_dictionary(){
+    $result = wp_remote_get( esc_url('https://www.oxfordlearnersdictionaries.com/definition/english/' . sanitize_title_with_dashes( $_POST['word']) ) );
 
-    $result = wp_remote_get( 'https://www.oxfordlearnersdictionaries.com/definition/english/' . sanitize_title_with_dashes( $_POST['word'] ) );
-    echo $result['body'];
+    if( is_wp_error( $result ) ) 
+        return;
+
+    $body = wp_remote_retrieve_body( $result );
+    echo $body;
 }
 add_action( 'wp_ajax_nopriv_search_oxford_dictionary', 'search_oxford_dictionary' );
 add_action( 'wp_ajax_search_oxford_dictionary', 'search_oxford_dictionary' );
