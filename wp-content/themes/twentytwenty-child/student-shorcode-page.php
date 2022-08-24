@@ -16,15 +16,11 @@ get_header(); ?>
     </div>
 </header>
 
-<div id="site-content" class="<?php echo is_page_template( 'templates/template-full-width.php' ) ? '' : 'thin'; ?>">
+<div id="site-content">
     <div id="content" role="main" class="archive-header-inner section-inner medium">
-
-    
-
-<?php
-    the_content();
-?>
-
+    <?php
+        the_content();
+    ?>
     </div>
 </div>
 
