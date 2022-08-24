@@ -602,7 +602,7 @@ function students_shortcode( $attributes ) {
 add_shortcode( 'students', 'students_shortcode' );
 
 function load_show_more_button( $displayed, $found ) {
-    echo '<form method="post"> <div class="show-more-div"> <button class="show-more" value1="' . $displayed . '" value2="' . $found . '" name="show-more">Show more</button> </div> </form>';
+    echo '<div class="show-more-div"> <button class="show-more" value1="' . $displayed . '" value2="' . $found . '" name="show-more">Show more</button> </div> ';
     echo '<div class="show-more-data"> </div>';
 }
 
