@@ -30,6 +30,7 @@ function ajax_scripts_method() {
     wp_localize_script( 'student-ajax', 'my_ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 }
 add_action( 'admin_enqueue_scripts', 'ajax_scripts_method' );
+add_action( 'wp_enqueue_scripts', 'ajax_scripts_method' );
 
 function add_my_filter( $content ) {
     $content = __( apply_filters( 'custom_filter_change', "This is my filter" )) . $content;
@@ -557,9 +558,79 @@ add_action( 'wp_ajax_search_oxford_dictionary', 'search_oxford_dictionary' );
 /** 
  * Creating shortcode for students
  * */
-function students_shortcode() {
+function students_shortcode( $attributes ) {
+    ob_start();
+    $shortcode_args = shortcode_atts( array(
+        'number-of-students' => '',
+        'student-id'         => ''
+    ), $attributes );
 
+    $args = array(
+        'post_type'      => 'student',
+        'p'              => $shortcode_args[ 'student-id' ],
+        'posts_per_page' => $shortcode_args[ 'number-of-students' ]
+    );
+    $query = new WP_Query( $args );
+    
+    if( $query->have_posts() ) {
+        while ( $query->have_posts() ) {
+    ?>
+    <div class="student-box"> 
+        <?php
+            $query->the_post();
+            $data = get_student_info( get_the_ID() );
+
+            echo '<div class="student-name"> ' . get_the_title() . ', ' . $data[ 'class' ] . ' Grade </div>';
+            echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
+        ?>
+    </div>
+    <?php   	
+        }
+    }
+    if( $query->found_posts > $shortcode_args[ 'number-of-students' ] ) {
+        $displayed = $shortcode_args[ 'number-of-students' ];
+        echo load_show_more_button( $displayed, $query->found_posts );
+    }
+    wp_reset_postdata();
+
+    ?>
+    
+    <?php
+
+    return ob_get_clean();
 }
-add_shortcode('students', 'students_shortcode');
+add_shortcode( 'students', 'students_shortcode' );
+
+function load_show_more_button( $displayed, $found ) {
+    echo '<div class="show-more-div"> <button class="show-more" value1="' . $displayed . '" value2="' . $found . '" name="show-more">Show more</button> </div> ';
+    echo '<div class="show-more-data"> </div>';
+}
+
+function student_show_more() {
+    $args = array(
+        'post_type'      => 'student',
+        'offset'         => sanitize_text_field( $_POST[ 'displayed' ] ),
+        'posts_per_page' => sanitize_text_field( $_POST[ 'found' ] )
+    );
+    $query = new WP_Query( $args );
+
+    if( $query->have_posts() ) {
+        while( $query->have_posts() ) {
+    ?>
+    <div class="student-box"> 
+    <?php
+            $query->the_post();
+            $data = get_student_info( get_the_ID() );
+
+            echo '<div class="student-name"> ' . get_the_title() . ', ' . $data[ 'class' ] . ' Grade </div>';
+            echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
+    ?>
+    </div>
+    <?php
+        }
+    }
+    wp_die();
+}
+add_action( 'wp_ajax_student_show_more', 'student_show_more' );
 
 // END ENQUEUE PARENT ACTION

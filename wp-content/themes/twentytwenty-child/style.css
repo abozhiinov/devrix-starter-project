@@ -24,6 +24,7 @@ a {
     margin-left: auto;
     margin-right: auto;
     width: 40%;
+    margin-top: 2%;
 }
 
 .student-info {
@@ -33,4 +34,9 @@ a {
 
 .student-box {
     margin-top: 50px;
+}
+
+.show-more-div {
+    margin-top: 5%;
+    text-align: center;
 }
