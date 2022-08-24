@@ -39,4 +39,21 @@ jQuery(document).ready(function($){
         });
     });
 
+    $('.show-more').on('click' ,function(e){
+        e.preventDefault();
+        $('.show-more').slideUp(500);
+        jQuery.ajax({
+            url: my_ajax_object.ajax_url,
+            type: 'POST',
+            data: {
+                'action' : 'student_show_more',
+                'displayed' : $(this).attr('value1'),
+                'found' : $(this).attr('value2')
+            },
+            success: function(result){ 
+                $('.show-more-data').html(result); 
+            } 
+        });
+    });
+
 });
