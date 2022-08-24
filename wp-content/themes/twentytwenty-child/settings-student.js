@@ -41,7 +41,7 @@ jQuery(document).ready(function($){
 
     $('.show-more').on('click' ,function(e){
         e.preventDefault();
-        $('.show-more').slideUp(500);
+        
         jQuery.ajax({
             url: my_ajax_object.ajax_url,
             type: 'POST',
@@ -51,6 +51,7 @@ jQuery(document).ready(function($){
                 'found' : $(this).attr('value2')
             },
             success: function(result){ 
+                $('.show-more').slideUp(500);
                 $('.show-more-data').html(result); 
             } 
         });
