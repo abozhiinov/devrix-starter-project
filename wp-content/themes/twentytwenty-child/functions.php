@@ -562,7 +562,8 @@ function students_shortcode( $attributes ) {
     ob_start();
     $shortcode_args = shortcode_atts( array(
         'number-of-students' => '',
-        'student-id'         => ''
+        'student-id'         => '',
+        'infinite-scroll'    => 'false'
     ), $attributes );
 
     $args = array(
@@ -589,7 +590,11 @@ function students_shortcode( $attributes ) {
     }
     if( $query->found_posts > $shortcode_args[ 'number-of-students' ] ) {
         $displayed = $shortcode_args[ 'number-of-students' ];
-        echo load_show_more_button( $displayed, $query->found_posts );
+        if( 'true' === $shortcode_args[ 'infinite-scroll' ] ) {
+            echo '<div class="infinite-scroll" value="' . $displayed . '"> </div>';
+        } else {
+            echo load_show_more_button( $displayed, $query->found_posts );
+        }
     }
     wp_reset_postdata();
 
@@ -632,5 +637,32 @@ function student_show_more() {
     wp_die();
 }
 add_action( 'wp_ajax_student_show_more', 'student_show_more' );
+
+function infinite_more_data() {
+    $args = array(
+        'post_type' => 'student',
+        'offset'    => $_POST['displayed'],
+        'posts_per_page' => 1
+    );
+
+    $query = new WP_Query( $args );
+    if( $query->have_posts() ) {
+        while( $query->have_posts() ) {
+    ?>
+    <div class="student-box">
+    <?php
+            $query->the_post();
+            $data = get_student_info( get_the_ID() );
+            
+            echo '<div class="student-name"> ' . get_the_title() . ', ' . $data[ 'class' ] . ' Grade </div>';
+            echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
+    ?>
+    </div>
+    <?php
+        }
+    }
+    wp_die();
+}
+add_action( 'wp_ajax_infinite_more_data', 'infinite_more_data' );
 
 // END ENQUEUE PARENT ACTION
