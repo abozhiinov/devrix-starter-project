@@ -558,53 +558,36 @@ add_action( 'wp_ajax_search_oxford_dictionary', 'search_oxford_dictionary' );
  * Creating shortcode for students
  * */
 function students_shortcode( $attributes ) {
+    ob_start();
     $shortcode_args = shortcode_atts( array(
-        'number_of_students' => '0',
+        'number-of-students' => '',
+        'student-id'         => ''
     ), $attributes );
 
-    ?>
-
-    <div id="site-content" class="<?php echo is_page_template( 'templates/template-full-width.php' ) ? '' : 'thin'; ?>">
-    <div id="content" role="main" class="archive-header-inner section-inner medium">
- 
-    <?php 
     $args = array(
         'post_type'      => 'student',
-        'meta_key'       => 'status',
-        'meta_value'     => '1',
-        'posts_per_page' => $shortcode_args[ 'number_of_students' ]
+        'p'              => $shortcode_args[ 'student-id' ],
+        'posts_per_page' => $shortcode_args[ 'number-of-students' ]
     );
     $query = new WP_Query( $args );
     
     if( $query->have_posts() ) {
         while ( $query->have_posts() ) {
     ?>
-
     <div class="student-box"> 
-
         <?php
             $query->the_post();
-
-            $title = str_replace( ' ','-', strtolower( get_the_title() ) );
             $data = get_student_info( get_the_ID() );
 
-            echo '<div class="student-name"> <a href=' . home_url( $title ) . '>' . get_the_title() . ', ' . $data[ 'class' ] . ' Grade </a> </div>';
-
+            echo '<div class="student-name"> ' . get_the_title() . ', ' . $data[ 'class' ] . ' Grade </div>';
             echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
         ?>
-
     </div>
-
     <?php   	
         }
     }
     wp_reset_postdata();
-    ?>
-    
-        </div>
-    </div>
-
-<?php
+    return ob_get_clean();
 }
 add_shortcode('students', 'students_shortcode');
 
