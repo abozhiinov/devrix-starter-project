@@ -57,8 +57,9 @@ jQuery(document).ready(function($){
         });
     });
 
-    if( $('.infinite-scroll').attr('value').length > 0) {
-        var display = Number($(".infinite-scroll").attr("value"));
+    if( $('.infinite-scroll').attr('value').length ) {
+        const element = $('.infinite-scroll');
+        var display = Number(element.attr("value"));
 
         $(window).scroll(function(e){
             if( $(window).scrollTop() + $(window).height() >= $(document).height() ) {
@@ -71,7 +72,7 @@ jQuery(document).ready(function($){
                     }, 
                     success: function(data) {
                         display++; 
-                        $(".infinite-scroll").append(data);
+                        element.append(data);
                     }
                 });
             }
