@@ -57,25 +57,26 @@ jQuery(document).ready(function($){
         });
     });
 
-    if($(".infinite-scroll").attr("value") !== null){
+    if( $('.infinite-scroll').attr('value').length > 0) {
         var display = Number($(".infinite-scroll").attr("value"));
+
+        $(window).scroll(function(e){
+            if( $(window).scrollTop() + $(window).height() >= $(document).height() ) {
+                jQuery.ajax({
+                    url: my_ajax_object.ajax_url,
+                    type: 'POST',
+                    data: {
+                        'action' : 'infinite_more_data',
+                        'displayed' : display 
+                    }, 
+                    success: function(data) {
+                        display++; 
+                        $(".infinite-scroll").append(data);
+                    }
+                });
+            }
+        });
     }
-    window.scroll(function(e){
-        if( window.scrollTop() + window.height() >= document.height() ) {
-            jQuery.ajax({
-                url: my_ajax_object.ajax_url,
-                type: 'POST',
-                data: {
-                    'action' : 'infinite_more_data',
-                    'displayed' : display 
-                }, 
-                success: function(data) {
-                    display++; 
-                    $(".infinite-scroll").append(data);
-                }
-            });
-        }
-    });
 
 
 })
