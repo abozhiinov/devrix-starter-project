@@ -57,4 +57,27 @@ jQuery(document).ready(function($){
         });
     });
 
-});
+    const infiniteScrollElement = $('.infinite-scroll');
+    if( infiniteScrollElement.length ) {
+        let display = Number(infiniteScrollElement.attr("value"));
+
+        $(window).scroll(function(e){
+            if( $(window).scrollTop() + $(window).height() >= $(document).height() ) {
+                jQuery.ajax({
+                    url: my_ajax_object.ajax_url,
+                    type: 'POST',
+                    data: {
+                        'action' : 'infinite_more_data',
+                        'displayed' : display 
+                    }, 
+                    success: function(data) {
+                        display++; 
+                        infiniteScrollElement.append(data);
+                    }
+                });
+            }
+        });
+    }
+
+
+})
