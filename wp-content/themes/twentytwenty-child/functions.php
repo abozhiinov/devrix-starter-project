@@ -581,7 +581,7 @@ function students_shortcode( $attributes ) {
             $query->the_post();
             $data = get_student_info( get_the_ID() );
 
-            echo '<div class="student-name"> ' . get_the_title() . ', ' . $data[ 'class' ] . ' Grade </div>';
+            echo '<div class="student-name"> ' . get_the_title() . ', ' . esc_html($data[ 'class' ]) . ' Grade </div>';
             echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
         ?>
     </div>
@@ -591,7 +591,7 @@ function students_shortcode( $attributes ) {
     if( $query->found_posts > $shortcode_args[ 'number-of-students' ] ) {
         $displayed = $shortcode_args[ 'number-of-students' ];
         if( 'true' === $shortcode_args[ 'infinite-scroll' ] ) {
-            echo '<div class="infinite-scroll" value="' . $displayed . '"> </div>';
+            echo '<div class="infinite-scroll" value="' . esc_html($displayed) . '"> </div>';
         } else {
             echo load_show_more_button( $displayed, $query->found_posts );
         }
@@ -654,8 +654,8 @@ function infinite_more_data() {
             $query->the_post();
             $data = get_student_info( get_the_ID() );
             
-            echo '<div class="student-name"> ' . get_the_title() . ', ' . $data[ 'class' ] . ' Grade </div>';
-            echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
+            echo '<div class="student-name"> ' . esc_html(get_the_title()) . ', ' . $data[ 'class' ] . ' Grade </div>';
+            echo '<div class="student-thumbnail">' . wp_kses_post(get_the_post_thumbnail()) . '</div>';
     ?>
     </div>
     <?php
