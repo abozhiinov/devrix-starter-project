@@ -1,50 +1,43 @@
 <?php 
 
 function rest_api_student( $data ) {
-    if( !empty( $data['id'] ) ) {
-        $query = new WP_Query([
-            'post_type' => 'student',
-            'p'         => $data[ 'id' ]   
-        ]);
-        
-        $post  = $query->get_posts();
-        $meta  = get_post_meta( $data[ 'id' ] );
-        $posts = array_merge( $post, $meta );
-    } else {
-        $query = new WP_Query([
-            'post_type'   => 'student',
-            'numberposts' => -1
-        ]);
+    $args = array(
+        'post_type'      => 'student',
+        'post_status'    => 'publish',
+        'posts_per_page' => 50,
+    );
 
-        $no_meta_posts = $query->get_posts();
-        $posts = array( array() );
-        $count = 0;
-
-        foreach( $no_meta_posts as $post ) :
-            $meta = get_post_meta( $post->ID );
-            $obj  = new WP_Post( $post );
-            $post = $obj->to_array( $post );
-            $posts[ $count++ ] = array_merge( $post, $meta );
-        endforeach;
+    if( $data->has_param( 'id' ) ) {
+       $args += [ 'p' => $data[ 'id' ] ];
     }
 
-    if( empty( $posts ) ) {
-        return new WP_Error( 'empty_student', 'There are no posts to display', array( 'status' => 404 ) );
+    $query = new WP_Query( $args );
+
+    $student_data = [];
+    $count        = 0;
+    $posts        = $query->get_posts();
+
+    foreach( $posts as $post ) {
+        $meta = get_post_meta( $post->ID );
+        $obj  = new WP_Post( $post );
+        $post = $obj->to_array();
+
+        $student_data[ $count++ ] = array_merge( $post, $meta );
     }
-    $response = new WP_REST_Response( $posts );
+
+    if( empty( $student_data ) ) {
+        return new WP_Error( 'no_student_available', 'There is no student to display', array( 'status' => 404 ) );
+    }
+    $response = new WP_REST_Response( $student_data );
 
     return $response;
 }
 
 add_action( 'rest_api_init', function () {
-    register_rest_route( '/jwt-auth/v1', '/student/(?P<id>\d+)', array(
-      'methods'  => 'GET',
-      'callback' => 'rest_api_student',
-    ) );
-    register_rest_route( '/jwt-auth/v1', '/student', array(
+    register_rest_route( '/v1', '/student(?:/(?P<id>\d+))?', array(
         'methods'  => 'GET',
-        'callback' => 'rest_api_student',
-      ) );
+        'callback' => 'rest_api_student'
+    ) );
 } );
 
 ?>
