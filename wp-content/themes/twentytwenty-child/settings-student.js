@@ -57,9 +57,11 @@ jQuery(document).ready(function($){
         });
     });
 
-    var display = Number($(".infinite-scroll").attr("value"));
-    $(window).scroll(function(e){
-        if( $(window).scrollTop() + $(window).height() >= $(document).height() ) {
+    if($(".infinite-scroll").attr("value") !== null){
+        var display = Number($(".infinite-scroll").attr("value"));
+    }
+    window.scroll(function(e){
+        if( window.scrollTop() + window.height() >= document.height() ) {
             jQuery.ajax({
                 url: my_ajax_object.ajax_url,
                 type: 'POST',

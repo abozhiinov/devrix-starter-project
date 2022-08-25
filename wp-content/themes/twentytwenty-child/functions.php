@@ -665,4 +665,6 @@ function infinite_more_data() {
 }
 add_action( 'wp_ajax_infinite_more_data', 'infinite_more_data' );
 
+
+
 // END ENQUEUE PARENT ACTION
