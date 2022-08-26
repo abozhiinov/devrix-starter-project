@@ -24,6 +24,7 @@ get_header(); ?>
     $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
     $args = array(
         'post_type'  => 'student',
+        'post_status' => 'publish',
         'meta_key'   => 'status',
         'meta_value' => '1',
         'paged'      => $paged
