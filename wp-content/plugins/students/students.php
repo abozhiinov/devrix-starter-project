@@ -11,6 +11,7 @@
  * Text Domain:  
  * Domain Path:  
  */
+ require 'functions.php';
  
  function create_posttype() {
         $labels = array(
