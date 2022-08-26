@@ -44,7 +44,7 @@ add_action( 'rest_api_init', function () {
  * Register adding student route
  */
 add_action( 'rest_api_init', function () {
-  register_rest_route( '/add-student', '/v2', array(
+  register_rest_route( '/v1', '/add-student', array(
         'methods'  => 'POST',
         'callback' => 'add_student_callback',
     ) );
@@ -86,7 +86,7 @@ function add_student_callback( $request_data ) {
         update_post_meta( $new_post_id, 'class', $class );
         update_post_meta( $new_post_id, 'status', $status );
 
-        if ($new_post_id) {
+        if ( $new_post_id ) {
             $data[ 'status' ] = 'Post added Successfully.';  
         }
         else {
@@ -114,20 +114,22 @@ add_action( 'rest_api_init', function () {
  * Edit student through REST API
  */
 function edit_student_callback( $request_data ) {
-    $data = array();
-    $id = basename( cur_page_url(), '?' );
+    $data      = array();
+    $url_array = explode( '?', basename( cur_page_url() ) );
+    $id        = $url_array[0];
 
     $parameters  = $request_data->get_params();
-    //var_dump($parameters);
+
     if( !empty( $parameters['post_title'] ) )  $post_title  = sanitize_text_field( $parameters['post_title'] );
     if( !empty( $parameters['the_content'] ) ) $the_content = sanitize_text_field( $parameters['the_content'] );
     if( !empty( $parameters['the_excerpt'] ) ) $the_excerpt = sanitize_text_field( $parameters['the_excerpt'] );
 
-    if( $parameters['country'] !== null )  { $country  = sanitize_text_field( $parameters['country'] ); }
-    if( !empty( $parameters['address'] ) )  { $address   = sanitize_text_field( $parameters['address'] ); }
-    if( !empty( $parameters['birthdate'] ) ){ $birthdate = sanitize_text_field( $parameters['birthdate'] ); }
-    if( !empty( $parameters['class'] ) )    { $class     = sanitize_text_field( $parameters['class'] ); }
-    if( !empty( $parameters['status'] ) )   { $status    = sanitize_text_field( $parameters['status'] ); }
+    $meta      = get_post_meta( $id );
+    $country   = !empty( $parameters['country'] )   ? sanitize_text_field( $parameters['country'] )   : $meta['lives_in'][0] ;
+    $address   = !empty( $parameters['address'] )   ? sanitize_text_field( $parameters['address'] )   : $meta['address'][0]; 
+    $birthdate = !empty( $parameters['birthdate'] ) ? sanitize_text_field( $parameters['birthdate'] ) : $meta['birthdate'][0]; 
+    $class     = !empty( $parameters['class'] )     ? sanitize_text_field( $parameters['class'] )     : $meta['class'][0]; 
+    $status    = !empty( $parameters['status'] )    ? sanitize_text_field( $parameters['status'] )    : $meta['status'][0]; 
 
     if( !empty( $id ) ){
 
@@ -138,18 +140,18 @@ function edit_student_callback( $request_data ) {
         if( !empty( $the_excerpt ) ) $my_post += [ 'post_excerpt' => $the_excerpt, ];
 
         $post_id = wp_update_post( $my_post );
+       
+        update_post_meta( $post_id, 'lives_in', $country) ; 
+        update_post_meta( $post_id, 'address', $address );
+        update_post_meta( $post_id, 'birthdate', $birthdate );
+        update_post_meta( $post_id, 'class', $class );
+        update_post_meta( $post_id, 'status', $status );
 
-        if( isset( $country ) )    update_post_meta( $post_id, 'lives_in', $country) ; 
-        if( !empty( $address ) )   update_post_meta( $post_id, 'address', $address );
-        if( !empty( $birthdate ) ) update_post_meta( $post_id, 'birthdate', $birthdate );
-        if( !empty( $class ) )     update_post_meta( $post_id, 'class', $class );
-        if( !empty( $status ) )    update_post_meta( $post_id, 'status', $status );
-        var_dump(get_post_meta($post_id));
-        if ($post_id) {
+        if ( $post_id ) {
             $data[ 'status' ] = 'Post updated Successfully.';  
         }
         else {
-            $data[ 'status' ] = 'post failed..';
+            $data[ 'status' ] = 'Post failed..';
         }
 
     } else {
