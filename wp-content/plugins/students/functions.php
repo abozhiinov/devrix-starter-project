@@ -189,7 +189,7 @@ function delete_student_callback( ) {
 /**
  * Get current page URL
  */
-function cur_page_url()  {
+function cur_page_url() {
     $pageURL = 'http';
 
     if ( $_SERVER[ "HTTPS" ] == "on" ) {
