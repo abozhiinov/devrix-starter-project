@@ -147,7 +147,7 @@ function student_custom_box_html() {
     </div>
     <div>
         <label for="birthdate_field">Birthdate</label></br>
-        <input type="date" name="birthdate" class="postbox" value="<?php echo $data['birthdate']; ?>"/>
+        <input type="text" name="birthdate" class="postbox" value="<?php echo $data['birthdate']; ?>"/>
     </div>
     <div>
         <label for="class_field">Class / Grade</label></br>
@@ -568,6 +568,7 @@ function students_shortcode( $attributes ) {
 
     $args = array(
         'post_type'      => 'student',
+        'post_status' => 'publish',
         'p'              => $shortcode_args[ 'student-id' ],
         'posts_per_page' => $shortcode_args[ 'number-of-students' ]
     );
@@ -614,6 +615,7 @@ function load_show_more_button( $displayed, $found ) {
 function student_show_more() {
     $args = array(
         'post_type'      => 'student',
+        'post_status' => 'publish',
         'offset'         => sanitize_text_field( $_POST[ 'displayed' ] ),
         'posts_per_page' => sanitize_text_field( $_POST[ 'found' ] )
     );
@@ -641,6 +643,7 @@ add_action( 'wp_ajax_student_show_more', 'student_show_more' );
 function infinite_more_data() {
     $args = array(
         'post_type' => 'student',
+        'post_status' => 'publish',
         'offset'    => $_POST['displayed'],
         'posts_per_page' => 1
     );
