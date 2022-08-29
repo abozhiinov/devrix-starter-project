@@ -88,13 +88,12 @@ function add_student_callback( $request_data ) {
 
         if ( $new_post_id ) {
             $data[ 'status' ] = 'Post added Successfully.';  
-        }
-        else {
+        } else {
             $data[ 'status' ] = 'post failed..';
         }
 
     } else {
-        $data[ 'status' ] = 'Please provide correct post details.';
+        return new WP_Error( 'incorrect_post_details', 'Please provide correct post details.', array( 'status' => 404 ) );
     }
 
     return $data;
@@ -148,14 +147,13 @@ function edit_student_callback( $request_data ) {
         update_post_meta( $post_id, 'status', $status );
 
         if ( $post_id ) {
-            $data[ 'status' ] = 'Post updated Successfully.';  
-        }
-        else {
-            $data[ 'status' ] = 'Post failed..';
+            $data[ 'status' ] = 'Post updated Successfully.'; 
+        } else {
+            return new WP_Error( 'post_failed', 'Incorrect ID provided.', array( 'status' => 404 ) );
         }
 
     } else {
-        $data[ 'status' ] = 'Please provide correct post details.';
+        return new WP_Error( 'incorrect_post_details', 'Please provide correct post details.', array( 'status' => 404 ) );
     }
 
     return $data;
@@ -182,7 +180,7 @@ function delete_student_callback( ) {
         wp_delete_post( $id );
         $data[ 'status' ] = 'Post deleted Successfully.';  
     } else {
-        $data[ 'status' ] = 'Please provide correct post details.';
+        return new WP_Error( 'incorrect_post_details', 'Please provide correct post details.', array( 'status' => 404 ) );;
     }
 
     return $data;
@@ -191,7 +189,7 @@ function delete_student_callback( ) {
 /**
  * Get current page URL
  */
-function cur_page_url() {
+function cur_page_url()  {
     $pageURL = 'http';
 
     if ( $_SERVER[ "HTTPS" ] == "on" ) {
