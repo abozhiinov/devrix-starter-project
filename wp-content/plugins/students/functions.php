@@ -252,14 +252,12 @@ function cur_page_url() {
 	$page_url .= '://';
 	if ( isset( $_SERVER['SERVER_PORT'] ) && '80' !== $_SERVER['SERVER_PORT'] ) {
 		if ( isset( $_SERVER['SERVER_NAME'] ) && isset( $_SERVER['SERVER_PORT'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
-			$page_url .= sanitize_text_field( $_SERVER['SERVER_NAME'] ) . ':' . sanitize_text_field( $_SERVER['SERVER_PORT'] ) . sanitize_text_field( $_SERVER['REQUEST_URI'] );
+			$page_url .= sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) . ':' . sanitize_text_field( wp_unslash( $_SERVER['SERVER_PORT'] ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 		}
 	} else {
-		$page_url .= sanitize_text_field( $_SERVER['SERVER_NAME'] ) . sanitize_text_field( $_SERVER['REQUEST_URI'] );
+		$page_url .= sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 	}
 
 	return $page_url;
 }
-
-?>
 
