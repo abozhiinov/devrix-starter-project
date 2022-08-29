@@ -77,7 +77,7 @@ add_action(
 /**
  * Add student through REST API
  *
- * @param object $request_data requested data.
+ * @param object $request_data requested student data.
  */
 function add_student_callback( $request_data ) {
 	$data = array();
@@ -114,13 +114,13 @@ function add_student_callback( $request_data ) {
 		if ( $new_post_id ) {
 			$data['status'] = 'Post added Successfully.';
 		} else {
-			$data['status'] = 'post failed..';
+			return new WP_Error( 'post_failed', 'Post failed.', array( 'status' => 404 ) );
 		}
 	} else {
-		$data['status'] = 'Please provide correct post details.';
+		return new WP_Error( 'incorrect_student_details', 'Please provide correct student details', array( 'status' => 404 ) );
 	}
 
-	return $data;
+	return new WP_REST_Response( $data );
 }
 
 /**
@@ -150,10 +150,10 @@ function edit_student_callback( $request_data ) {
 	$url_array = explode( '?', basename( cur_page_url() ) );
 	$id        = $url_array[0];
 
-	$parameters  = $request_data->get_params();
+	$parameters = $request_data->get_params();
 
 	if ( ! empty( $parameters['post_title'] ) ) {
-		$post_title  = sanitize_text_field( $parameters['post_title'] );
+		$post_title = sanitize_text_field( $parameters['post_title'] );
 	}
 	if ( ! empty( $parameters['the_content'] ) ) {
 		$the_content = sanitize_text_field( $parameters['the_content'] );
@@ -174,7 +174,7 @@ function edit_student_callback( $request_data ) {
 		$my_post  = array();
 		$my_post += array( 'ID' => $id );
 		if ( ! empty( $post_title ) ) {
-			$my_post += array( 'post_title'   => $post_title );
+			$my_post += array( 'post_title' => $post_title );
 		}
 		if ( ! empty( $the_content ) ) {
 			$my_post += array( 'post_content' => $the_content );
@@ -193,13 +193,13 @@ function edit_student_callback( $request_data ) {
 		if ( $post_id ) {
 			$data['status'] = 'Post updated Successfully.';
 		} else {
-			$data['status'] = 'Post failed..';
+			return new WP_Error( 'post_failed', 'Post failed.', array( 'status' => 404 ) );
 		}
 	} else {
-		$data['status'] = 'Please provide correct post details.';
+		return new WP_Error( 'incorrect_student_details', 'Please provide correct student details', array( 'status' => 404 ) );
 	}
 
-	return $data;
+	return new WP_REST_Response( $data );
 }
 
 /**
@@ -227,13 +227,17 @@ function delete_student_callback() {
 	$id   = basename( cur_page_url() );
 
 	if ( ! empty( $id ) ) {
-		wp_delete_post( $id );
-		$data['status'] = 'Post deleted Successfully.';
+		$answer = wp_delete_post( $id );
+		if ( 'false' !== $answer && null !== $answer ) {
+			$data['status'] = 'Post deleted Successfully.';
+		} else {
+			return new WP_Error( 'incorrect_student_id', 'Please provide correct student ID', array( 'status' => 404 ) );
+		}
 	} else {
-		$data['status'] = 'Please provide correct post details.';
+		return new WP_Error( 'incorrect_student_details', 'Please provide correct student details', array( 'status' => 404 ) );
 	}
 
-	return $data;
+	return new WP_REST_Response( $data );
 }
 
 /**
@@ -258,4 +262,4 @@ function cur_page_url() {
 }
 
 ?>
-<!-- End  -->
+
