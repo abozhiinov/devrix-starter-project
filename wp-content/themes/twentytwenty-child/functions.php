@@ -1,5 +1,11 @@
 <?php
-// Exit if accessed directly
+/**
+ * Functions file
+ *
+ * @package WordPress
+ */
+
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	 exit;
 }
@@ -7,10 +13,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 $master_modified_time = filemtime( get_theme_file_path());
 define( 'DX_ASSETS_VERSION', $master_modified_time . '-0000' );
 
-// BEGIN ENQUEUE PARENT ACTION
+// BEGIN ENQUEUE PARENT ACTION.
 // AUTO GENERATED - Do not modify or remove comment markers above or below:.
 
 if ( ! function_exists( 'chld_thm_cfg_locale_css' ) ) :
+	/**
+	 * Child Theme Config
+	 *
+	 * @param mixed $uri URI.
+	 */
 	function chld_thm_cfg_locale_css( $uri ) {
 		if ( empty( $uri ) && is_rtl() && file_exists( get_template_directory() . '/rtl.css' ) ) {
 			$uri = get_template_directory_uri() . '/rtl.css';
@@ -69,7 +80,6 @@ function add_two( $content ) {
 	$content .= '<div>Two</div>';
 	return $content;
 }
-// add_filter( 'the_content', 'add_two', 11 );.
 
 /**
  * Add one func.
@@ -80,7 +90,6 @@ function add_one( $content ) {
 	$content .= '<div>One</div>';
 	return $content;
 }
-// add_filter( 'the_content', 'add_one', 10 );.
 
 /**
  * Add three func.
@@ -91,7 +100,6 @@ function add_three( $content ) {
 	$content .= '<div>Three</div>';
 	return $content;
 }
-// add_filter( 'the_content', 'add_three', 11 );.
 
 /**
  * Add menu item func.
@@ -274,15 +282,17 @@ function pagination( $paged = '', $max_page = '' ) {
 		$max_page = isset( $wp_query->max_num_pages ) ? $wp_query->max_num_pages : 1;
 	}
 
-	echo paginate_links(
-		array(
-			'base'      => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
-			'format'    => '?paged=%#%',
-			'current'   => max( 1, $paged ),
-			'total'     => $max_page,
-			'mid_size'  => 1,
-			'prev_text' => __( '<' ),
-			'next_text' => __( '>' ),
+	echo wp_kses_post(
+		paginate_links(
+			array(
+				'base'      => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+				'format'    => '?paged=%#%',
+				'current'   => max( 1, $paged ),
+				'total'     => $max_page,
+				'mid_size'  => 1,
+				'prev_text' => __( '<' ),
+				'next_text' => __( '>' ),
+			)
 		)
 	);
 }
@@ -627,7 +637,9 @@ function search_oxford_dictionary() {
 	}
 
 	$body = wp_remote_retrieve_body( $result );
-	set_transient( 'dictionary_transient', $body, sanitize_text_field( wp_unslash( $_POST[ 'keep-time' ] ) ) );
+	if ( isset( $_POST['keep-time'] ) ) {
+		set_transient( 'dictionary_transient', $body, sanitize_text_field( wp_unslash( $_POST['keep-time'] ) ) );
+	}
 
 	echo $body;
 }
@@ -667,7 +679,6 @@ function students_shortcode( $attributes ) {
 
 			<div class="student-name"> <a href=<?php echo esc_url( get_the_permalink() ); ?>> <?php echo esc_html( get_the_title() ) . ', ' . esc_html( $data['class'] ) . ' Grade'; ?> </a> </div>
 			<div class="student-thumbnail"><?php echo get_the_post_thumbnail(); ?></div>
-			
 	</div>
 			<?php
 		}
@@ -681,10 +692,6 @@ function students_shortcode( $attributes ) {
 		}
 	}
 	wp_reset_postdata();
-
-	?>
-
-	<?php
 
 	return ob_get_clean();
 }
@@ -707,7 +714,7 @@ function load_show_more_button( $displayed, $found ) {
  * Show More func
  */
 function student_show_more() {
-	$args = array(
+	$args  = array(
 		'post_type'      => 'student',
 		'offset'         => sanitize_text_field( wp_unslash( $_POST['displayed'] ) ),
 		'posts_per_page' => sanitize_text_field( wp_unslash( $_POST['found'] ) ),
@@ -763,6 +770,7 @@ function infinite_more_data() {
 add_action( 'wp_ajax_infinite_more_data', 'infinite_more_data' );
 
 add_action( 'init', 'status_register_post_meta' );
+
 /**
  * Register status.
  */
@@ -784,6 +792,7 @@ function status_register_post_meta() {
 }
 
 add_action( 'acf/init', 'acf_students_init' );
+
 /**
  * Create ACF block
  */
