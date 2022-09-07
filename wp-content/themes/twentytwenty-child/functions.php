@@ -118,7 +118,7 @@ add_filter( 'menu_items', 'add_students_archive' );
  * @param mixed $items Items.
  * */
 function add_student_admin( $items ) {
-	$items .= '<li><a href=' . admin_url( 'admin.php?page=student-administration' ) . '>Administration</a></li>';
+	$items .= '<li><a href=' . admin_url( 'admin.php?page=ajax-student-administration' ) . '>Administration</a></li>';
 	return $items;
 }
 add_filter( 'menu_items', 'add_student_admin' );
