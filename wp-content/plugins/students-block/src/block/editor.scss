@@ -6,10 +6,28 @@
  */
 
 .wp-block-cgb-block-students-block  {
-  background: rgb(72, 108, 180);
-  border: 0.2rem solid $black;
   color: $black;
   margin: 0 auto;
   max-width: 740px;
   padding: 2rem;
+}
+
+.single-student {
+  margin-top: 50px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 40px;
+  color: rgb(122, 85, 43)
+}
+
+.block-title {
+  margin-top: 50px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 40px;
+  color: rgb(122, 85, 43)
+}
+
+.student-title {
+  margin-bottom: 20px;
 }

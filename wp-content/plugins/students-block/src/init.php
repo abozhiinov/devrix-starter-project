@@ -64,6 +64,8 @@ function students_block_cgb_block_assets() { // phpcs:ignore
 		]
 	);
 
+	wp_enqueue_script( 'wp-api-fetch' );
+
 	/**
 	 * Register Gutenberg block on server-side.
 	 *

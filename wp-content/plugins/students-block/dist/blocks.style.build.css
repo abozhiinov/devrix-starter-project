@@ -1,1 +1,40 @@
-.wp-block-cgb-block-students-block{background:#4cc2c2;border:0.2rem solid #292929;color:#292929;margin:0 auto;max-width:740px;padding:2rem}
+/**
+ * #.# Common SCSS
+ *
+ * Can include things like variables and mixins
+ * that are used across the project.
+*/
+/**
+ * #.# Styles
+ *
+ * CSS for both Frontend+Backend.
+ */
+.wp-block-cgb-block-students-block {
+  color: #292929;
+  margin: 0 auto;
+  max-width: 740px;
+  padding: 2rem; }
+
+.settings {
+  margin-top: 20px; }
+
+.checkbox {
+  margin-top: 20px;
+  margin-left: 20px; }
+
+.single-student {
+  margin-top: 50px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 40px;
+  color: #7a552b; }
+
+.block-title {
+  margin-top: 50px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 40px;
+  color: #7a552b; }
+
+.student-title {
+  margin-bottom: 20px; }

@@ -9,9 +9,22 @@
 import './editor.scss';
 import './style.scss';
 
+import { InspectorControls } from "@wordpress/block-editor";
+import { Fragment } from "@wordpress/element";
+import {
+	PanelBody,
+	PanelRow,
+	TextControl,
+	CheckboxControl
+} from "@wordpress/components";
+import { pickBy, _ } from 'lodash';
+import { useSelect } from '@wordpress/data'
+import { combineReducers } from 'redux';
+
 const { __ } = wp.i18n; // Import __() from wp.i18n
 const { registerBlockType } = wp.blocks; // Import registerBlockType() from wp.blocks
 
+//let students = '';
 /**
  * Register: aa Gutenberg Block.
  *
@@ -35,6 +48,27 @@ registerBlockType( 'cgb/block-students-block', {
 		__( 'CGB Example' ),
 		__( 'create-guten-block' ),
 	],
+	attributes: {
+		number_of_students : {
+			type: 'string',
+			selector: '.number-of-students',
+			default: '0'
+		},
+		active : {
+			type: 'checkbox',
+			selector: '.active',
+			default: false
+		},
+		student_id : {
+			type: 'string',
+			selector: '.student-id',
+			default: '0'
+		},
+		posts_final : {
+			type : 'array',
+			default : [{title: '', thumbnail: ''}]
+		}
+	},
 
 	/**
 	 * The edit function describes the structure of your block in the context of the editor.
@@ -47,13 +81,107 @@ registerBlockType( 'cgb/block-students-block', {
 	 * @param {Object} props Props.
 	 * @returns {Mixed} JSX Component.
 	 */
-	edit: ( props ) => {
-		// Creates a <p class='wp-block-cgb-block-students-block'></p>.
-		return (
-			<div className={ props.className }>
-				<p>Hi Students Block.</p>
-			</div>
+	edit: ( props ) => { 
+		const { attributes, setAttributes } = props;
+
+		let latestPostsQuery = pickBy(
+			{
+				per_page: Number(attributes.number_of_students),
+				_embed: true,
+				metaKey: 'status',
+			}
 		);
+
+		if(attributes.student_id !== '0') latestPostsQuery = pickBy(
+			{
+				include: Number(attributes.student_id),
+				per_page: parseInt(attributes.number_of_students),
+				_embed: true,
+				metaKey: 'status',
+			}
+		);
+
+		let posts = useSelect( (select) => {
+			return select('core').getEntityRecords(
+				'postType',
+				'student',
+				latestPostsQuery,
+			);
+		}, [])
+
+		setAttributes({posts_final: posts})
+
+		const nos_fill = ( attributes.number_of_students.length && !attributes.student_id.length)
+		const id_fill  = ( attributes.student_id.length && !attributes.number_of_students.length)
+			return (
+				<Fragment>
+					<InspectorControls>
+						<PanelBody title= { __("Settings") } initialOpen={true} >
+							<PanelRow>
+								<TextControl 
+									className='number-of-students'
+									label= { __("Number of Students", 'students-block') }
+									help= {__('When an ID is provided, this field is disabled')}
+									placeholder= { __('Type a number...') }
+									value= { attributes.number_of_students }
+									onChange= { (value) => {
+										setAttributes({ number_of_students: value }); 
+									} } 
+									min= {'0'}
+									disabled= { id_fill }
+								/> 
+							</PanelRow>
+							<PanelRow>
+								<CheckboxControl
+									className='active'
+									label= { __("Show Active / Inactive", 'students-block') }
+									onChange= { (value) => { 
+										setAttributes({ active: value });
+									} }
+									type= {'checkbox'}
+									checked= {attributes.active}
+								/>
+							</PanelRow>
+							<PanelRow>
+								<TextControl
+									className='student-id'
+									label= { __("Select Student by ID", 'students-block') }
+									help= {__('When number of students is filled, this field is disabled')}
+									placeholder= { __('Type an ID...') }
+									onChange= { (value) => {
+										setAttributes({ student_id: value });
+									} }
+									value= { attributes.student_id }
+									min= {'0'}
+									disabled= { nos_fill }
+								/>
+							</PanelRow>
+						</PanelBody>
+					</InspectorControls>
+					<div className={ props.className }>
+						{ posts && (
+							<div>
+								{
+									posts.map( (post) => {
+										if(post.meta.status === attributes.active){
+											const thumbnail_src =
+												post &&
+												post._embedded &&
+												post._embedded["wp:featuredmedia"][0]['source_url'];
+											
+											return  <div className='single-student'> 
+														<div className='student-title'>{ post.title.rendered }</div> 
+														<img src={ thumbnail_src } />
+													</div> 
+										}
+										
+									})
+								}
+							</div>
+						) }
+					</div>
+				</Fragment>
+			);
 	},
 
 	/**
@@ -68,9 +196,20 @@ registerBlockType( 'cgb/block-students-block', {
 	 * @returns {Mixed} JSX Frontend HTML.
 	 */
 	save: ( props ) => {
+		const { attributes } = props;
 		return (
-			<div className={ props.className }>
-				<p>Hi Students Block. Frontend </p>
+			<div className={props.className}> 
+				{attributes.posts_final.map( (post) => {
+					const thumbnail_src =
+					post &&
+					post._embedded &&
+					post._embedded["wp:featuredmedia"][0]['source_url'];
+					return  <div className='single-student'> 
+						<div className='student-title'>{ post.title.rendered }</div> 
+						<img src={ thumbnail_src } />
+					</div>  
+					}
+				)}
 			</div>
 		);
 	},

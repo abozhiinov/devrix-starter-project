@@ -95,7 +95,7 @@ function add_student_callback( $request_data ) {
 
 	if ( ! empty( $post_title ) ) {
 
-		$my_post = array(
+		$my_post     = array(
 			'post_title'   => $post_title,
 			'post_content' => $the_content,
 			'post_author'  => '',
@@ -259,5 +259,16 @@ function cur_page_url() {
 	}
 
 	return $page_url;
+}
+
+if ( function_exists( 'acf_add_options_page' ) ) {
+	acf_add_options_page(
+		array(
+			'page_title' => __( 'Header / Footer Options' ),
+			'menu_slug'  => 'acf-options',
+			'capability' => 'edit_posts',
+			'post_id'    => 'acf-options',
+		)
+	);
 }
 
