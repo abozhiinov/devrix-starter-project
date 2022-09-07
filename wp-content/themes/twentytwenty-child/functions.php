@@ -200,11 +200,11 @@ function student_custom_box_html() {
 	<div>
 		<label for="class_field">Class / Grade</label></br>
 		<select name="class" class="postbox" value="<?php echo esc_html( $data['class'] ); ?>">
-			<option value="8"  <?php echo 8 === $data['class'] ? 'selected' : ''; ?>>8th</option>
-			<option value="9"  <?php echo 9 === $data['class'] ? 'selected' : ''; ?>>9th</option>
-			<option value="10" <?php echo 10 === $data['class'] ? 'selected' : ''; ?>>10th</option>
-			<option value="11" <?php echo 11 === $data['class'] ? 'selected' : ''; ?>>11th</option>
-			<option value="12" <?php echo 12 === $data['class'] ? 'selected' : ''; ?>>12th</option>
+			<option value="8"  <?php echo 8 === intval( $data['class'] ) ? 'selected' : ''; ?>>8th</option>
+			<option value="9"  <?php echo 9 === intval( $data['class'] ) ? 'selected' : ''; ?>>9th</option>
+			<option value="10" <?php echo 10 === intval( $data['class'] ) ? 'selected' : ''; ?>>10th</option>
+			<option value="11" <?php echo 11 === intval( $data['class'] ) ? 'selected' : ''; ?>>11th</option>
+			<option value="12" <?php echo 12 === intval( $data['class'] ) ? 'selected' : ''; ?>>12th</option>
 		</select>
 	</div>
 	<div>
@@ -234,17 +234,26 @@ add_action( 'add_meta_boxes', 'student_add_custom_box' );
  * @param int $post_id ID.
  * */
 function save_meta_function( $post_id ) {
-	$lives_in  = sanitize_text_field( wp_unslash( $_POST['lives_in'] ) );
-	$address   = sanitize_text_field( wp_unslash( $_POST['address'] ) );
-	$birthdate = sanitize_text_field( wp_unslash( $_POST['birthdate'] ) );
-	$class     = sanitize_text_field( wp_unslash( $_POST['class'] ) );
-	$status    = sanitize_text_field( wp_unslash( $_POST['status'] ) );
-
-	update_post_meta( $post_id, 'lives_in', $lives_in );
-	update_post_meta( $post_id, 'address', $address );
-	update_post_meta( $post_id, 'birthdate', $birthdate );
-	update_post_meta( $post_id, 'class', $class );
-	update_post_meta( $post_id, 'status', $status );
+	if ( isset( $_POST['lives_in'] ) ) {
+		$lives_in = sanitize_text_field( wp_unslash( $_POST['lives_in'] ) );
+		update_post_meta( $post_id, 'lives_in', $lives_in );
+	}
+	if ( isset( $_POST['address'] ) ) {
+		$address = sanitize_text_field( wp_unslash( $_POST['address'] ) );
+		update_post_meta( $post_id, 'address', $address );
+	}
+	if ( isset( $_POST['birthdate'] ) ) {
+		$birthdate = sanitize_text_field( wp_unslash( $_POST['birthdate'] ) );
+		update_post_meta( $post_id, 'birthdate', $birthdate );
+	}
+	if ( isset( $_POST['class'] ) ) {
+		$class = sanitize_text_field( wp_unslash( $_POST['class'] ) );
+		update_post_meta( $post_id, 'class', $class );
+	}
+	if ( isset( $_POST['status'] ) ) {
+		$status = sanitize_text_field( wp_unslash( $_POST['status'] ) );
+		update_post_meta( $post_id, 'status', $status );
+	}
 }
 add_action( 'save_post', 'save_meta_function', 10 );
 
