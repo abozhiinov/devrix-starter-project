@@ -502,7 +502,7 @@ add_filter( 'manage_student_posts_columns', 'add_student_columns' );
 function print_extra_columns() {
 	$id      = get_the_ID();
 	$meta    = get_post_meta( $id );
-	$checked = ( 1 === $meta['status'][0] ) ? 'checked' : '';
+	$checked = ( 1 == $meta['status'][0] ) ? 'checked' : '';
 	echo '<form method="post"> <div > <input type="checkbox" class="student-status" id="' . get_the_ID() . '" name="status" value="1" ' . $checked . '  /> </div> </form>';
 }
 add_action( 'manage_student_posts_custom_column', 'print_extra_columns' );
