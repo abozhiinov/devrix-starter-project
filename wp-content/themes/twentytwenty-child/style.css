@@ -18,6 +18,7 @@ a {
     text-align: center;
     font-weight: bold; 
     font-size: 40px;
+    color: rgb(49, 100, 104);
 }
 
 .student-thumbnail {
@@ -33,6 +34,7 @@ a {
     margin-top: 2%;
     font-weight: bold;
     font-size: 30px;
+    color:rgb(49, 100, 104);
 }
 
 .student-box {
@@ -77,4 +79,8 @@ a {
 
 .acf-student-box {
     margin-top: 30px;
+}
+
+h2 {
+    color:rgb(49, 100, 104);
 }

@@ -205,7 +205,7 @@ registerBlockType( 'cgb/block-students-block', {
 					post._embedded &&
 					post._embedded["wp:featuredmedia"][0]['source_url'];
 					return  <div className='single-student'> 
-						<div className='student-title'>{ post.title.rendered }</div> 
+						<div className='student-title'> <a href= { post.link }> { post.title.rendered } </a> </div> 
 						<img src={ thumbnail_src } />
 					</div>  
 					}
