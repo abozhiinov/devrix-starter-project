@@ -1,12 +1,14 @@
 <?php
 // Exit if accessed directly
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	 exit;
+}
 
 $master_modified_time = filemtime( get_theme_file_path());
 define( 'DX_ASSETS_VERSION', $master_modified_time . '-0000' );
 
 // BEGIN ENQUEUE PARENT ACTION
-// AUTO GENERATED - Do not modify or remove comment markers above or below:
+// AUTO GENERATED - Do not modify or remove comment markers above or below:.
 
 if ( ! function_exists( 'chld_thm_cfg_locale_css' ) ) :
 	function chld_thm_cfg_locale_css( $uri ) {
@@ -27,7 +29,7 @@ endif;
 add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css', 10 );
 
 function ajax_scripts_method() {
-	wp_enqueue_script( 'student-ajax', get_stylesheet_directory_uri() . '/settings-student.js', array( 'jquery' ), DX_ASSETS_VERSION);
+	wp_enqueue_script( 'student-ajax', get_stylesheet_directory_uri() . '/settings-student.js', array( 'jquery' ), DX_ASSETS_VERSION );
 	wp_localize_script( 'student-ajax', 'my_ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 }
 add_action( 'admin_enqueue_scripts', 'ajax_scripts_method' );
@@ -119,7 +121,7 @@ function add_student_admin( $items ) {
 	$items .= '<li><a href=' . admin_url( 'admin.php?page=student-administration' ) . '>Administration</a></li>';
 	return $items;
 }
-add_filter( 'menu_items', 'add_student_admin');
+add_filter( 'menu_items', 'add_student_admin' );
 
 /**
  * Adds 'Profile Settings' panel to the menu
@@ -175,7 +177,7 @@ function get_student_info( $post_id ) {
  * */
 function student_custom_box_html() {
 	$id   = get_the_ID();
-	$data =  !empty( $id ) ? get_student_info( $id ) : array() ;
+	$data = ! empty( $id ) ? get_student_info( $id ) : array();
 	?>
 	<div>
 		<label for="location_field">Lives In (Country, City)</label></br>
@@ -201,7 +203,7 @@ function student_custom_box_html() {
 	</div>
 	<div>
 		<label for="activity">Activity Status </label></br>
-		<select name="status" class="postbox" value="<?php echo $data['status']; ?>">
+		<select name="status" class="postbox" value="<?php echo esc_html( $data['status'] ); ?>">
 			<option value="1" <?php if ( 1 === $data['status'] ) { ?> selected <?php } ?>>Active</option>
 			<option value="0" <?php if ( 0 === $data['status'] ) { ?> selected <?php } ?>>Inactive</option>
 		</select>
@@ -224,13 +226,15 @@ add_action( 'add_meta_boxes', 'student_add_custom_box' );
 
 /**
  * Sanitize and update personal data in the DB
+ *
+ * @param int $post_id ID.
  * */
 function save_meta_function( $post_id ) {
-	$lives_in  = sanitize_text_field( $_POST['lives_in'] );
-	$address   = sanitize_text_field( $_POST['address'] );
-	$birthdate = sanitize_text_field( $_POST['birthdate'] );
-	$class     = sanitize_text_field( $_POST['class'] );
-	$status    = sanitize_text_field( $_POST['status'] );
+	$lives_in  = sanitize_text_field( wp_unslash( $_POST['lives_in'] ) );
+	$address   = sanitize_text_field( wp_unslash( $_POST['address'] ) );
+	$birthdate = sanitize_text_field( wp_unslash( $_POST['birthdate'] ) );
+	$class     = sanitize_text_field( wp_unslash( $_POST['class'] ) );
+	$status    = sanitize_text_field( wp_unslash( $_POST['status'] ) );
 
 	update_post_meta( $post_id, 'lives_in', $lives_in );
 	update_post_meta( $post_id, 'address', $address );
@@ -242,6 +246,9 @@ add_action( 'save_post', 'save_meta_function', 10 );
 
 /**
  * Pagination function
+ *
+ * @param mixed $paged paged.
+ * @param mixed $max_page max page.
  * */
 function pagination( $paged = '', $max_page = '' ) {
 	$big = 999999999;
@@ -256,13 +263,13 @@ function pagination( $paged = '', $max_page = '' ) {
 
 	echo paginate_links(
 		array(
-			'base'       => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
-			'format'     => '?paged=%#%',
-			'current'    => max( 1, $paged ),
-			'total'      => $max_page,
-			'mid_size'   => 1,
-			'prev_text'  => __( '<' ),
-			'next_text'  => __( '>' ),
+			'base'      => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+			'format'    => '?paged=%#%',
+			'current'   => max( 1, $paged ),
+			'total'     => $max_page,
+			'mid_size'  => 1,
+			'prev_text' => __( '<' ),
+			'next_text' => __( '>' ),
 		)
 	);
 }
@@ -536,8 +543,8 @@ add_action( 'pre_get_posts', 'student_status_orderby' );
  * Function executed by AJAX to update activity status
  */
 function update_student_status() {
-	$status = ( 'true' === esc_attr( $_POST['checked'] ) ) ? 1 : 0;
-	update_post_meta( sanitize_text_field( $_POST['student-id'] ), 'status', $status );
+	$status = ( 'true' === sanitize_text_field( wp_unslash( $_POST['checked'] ) ) ) ? 1 : 0;
+	update_post_meta( sanitize_text_field( wp_unslash( $_POST['student-id'] ) ), 'status', $status );
 }
 add_action( 'wp_ajax_update_student_status', 'update_student_status' );
 
@@ -581,9 +588,9 @@ add_action( 'admin_init', 'register_dictionary_settings' );
  * */
 function show_dictionary_search() {
 	$body = ! empty( $result = get_transient( 'dictionary_transient' ) ) ? $result : '';
-	$search = isset( $_POST['dictionary-search'] ) ? sanitize_text_field( $_POST['dictionary-search'] ) : '';
+	$search = isset( $_POST['dictionary-search'] ) ? sanitize_text_field( wp_unslash( $_POST['dictionary-search'] ) ) : '';
 	echo '<form method="post" action="' . esc_url( admin_url( 'admin.php?page=dictionary' ) ) . '"> 
-		<input type="search" class="dictionary-search" name="dictionary-search" placeholder="Search..." value="' . $search . '"> 
+		<input type="search" class="dictionary-search" name="dictionary-search" placeholder="Search..." value="' . esc_html( $search ) . '"> 
 		<input type="submit" class="dictionary-submit"> 
 		<div> 
 			<label for="search">Keep search for:</label></br>
@@ -605,7 +612,7 @@ function search_oxford_dictionary() {
 	}
 
 	$body = wp_remote_retrieve_body( $result );
-	set_transient( 'dictionary_transient', $body, sanitize_text_field( $_POST[ 'keep-time' ] ) );
+	set_transient( 'dictionary_transient', $body, sanitize_text_field( wp_unslash( $_POST[ 'keep-time' ] ) ) );
 
 	echo $body;
 }
@@ -684,8 +691,8 @@ function load_show_more_button( $displayed, $found ) {
 function student_show_more() {
 	$args = array(
 		'post_type'      => 'student',
-		'offset'         => sanitize_text_field( $_POST['displayed'] ),
-		'posts_per_page' => sanitize_text_field( $_POST['found'] ),
+		'offset'         => sanitize_text_field( wp_unslash( $_POST['displayed'] ) ),
+		'posts_per_page' => sanitize_text_field( wp_unslash( $_POST['found'] ) ),
 	);
 	$query = new WP_Query( $args );
 
@@ -714,7 +721,7 @@ add_action( 'wp_ajax_student_show_more', 'student_show_more' );
 function infinite_more_data() {
 	$args = array(
 		'post_type'      => 'student',
-		'offset'         => $_POST['displayed'],
+		'offset'         => sanitize_text_field( wp_unslash( $_POST['displayed'] ) ),
 		'posts_per_page' => 1,
 	);
 
@@ -726,7 +733,7 @@ function infinite_more_data() {
 			<?php
 			$query->the_post();
 			$data = get_student_info( get_the_ID() );
-			echo '<div class="student-name"> <a href=" ' . esc_url( get_the_permalink() ) . ' ">' . esc_html( get_the_title() ) . ', ' . $data['class'] . ' Grade </a> </div>';
+			echo '<div class="student-name"> <a href=" ' . esc_url( get_the_permalink() ) . ' ">' . esc_html( get_the_title() ) . ', ' . esc_html( $data['class'] ) . ' Grade </a> </div>';
 			echo '<div class="student-thumbnail">' . wp_kses_post( get_the_post_thumbnail() ) . '</div>';
 			?>
 	</div>
