@@ -261,3 +261,14 @@ function cur_page_url() {
 	return $page_url;
 }
 
+if ( function_exists( 'acf_add_options_page' ) ) {
+	acf_add_options_page(
+		array(
+			'page_title' => __( 'Header / Footer Options' ),
+			'menu_slug'  => 'acf-options',
+			'capability' => 'edit_posts',
+			'post_id'    => 'acf-options',
+		)
+	);
+}
+

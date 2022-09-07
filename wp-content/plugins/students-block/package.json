@@ -1,0 +1,24 @@
+{
+  "name": "students-block-cgb-guten-block",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "cgb-scripts start",
+    "build": "cgb-scripts build",
+    "eject": "cgb-scripts eject"
+  },
+  "dependencies": {
+    "@wordpress/compose": "^5.14.0",
+    "@wordpress/core-data": "^4.14.0",
+    "@wordpress/data": "^7.0.0",
+    "cgb-dev-utils": "^1.6.1",
+    "cgb-scripts": "1.23.1",
+    "cross-spawn": "^7.0.3",
+    "modules": "^0.4.0"
+  },
+  "devDependencies": {
+    "webpack-dev-middleware": "^5.3.3",
+    "webpack-dev-server": "^4.10.1",
+    "webpack-hot-middleware": "^2.25.2"
+  }
+}

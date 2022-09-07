@@ -1,0 +1,43 @@
+/**
+ * #.# Styles
+ *
+ * CSS for both Frontend+Backend.
+ */
+
+.wp-block-cgb-block-students-block  {
+  color: $black;
+  margin: 0 auto;
+  max-width: 740px;
+  padding: 2rem;
+}
+
+.settings {
+  margin-top: 20px;
+}
+
+.checkbox {
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.single-student {
+  margin-top: 50px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 40px;
+  color: rgb(49, 100, 104)
+}
+
+.block-title {
+  margin-top: 50px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 40px;
+  color: rgb(49, 100, 104)
+}
+
+.student-title {
+  margin-bottom: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+

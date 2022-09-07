@@ -4,7 +4,7 @@ jQuery(document).ready(function($){
             url: my_ajax_object.ajax_url,
             type: 'POST',
             data: {
-                'action' : 'ajax_func',
+                'action' : 'ajax_students_settings',
                 'option' : $(this).attr('id'),
                 'checked': $(this).prop('checked')
             },

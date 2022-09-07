@@ -14,22 +14,27 @@ a {
 }
 
 .student-name {
+    font-family: Arial;
     text-align: center;
     font-weight: bold; 
-    font-size: 40px;
+    font-size: 45px;
+    color: rgb(49, 100, 104);
 }
 
 .student-thumbnail {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 40%;
+    width: 500px;
     margin-top: 2%;
+    margin-bottom: 2%;
 }
 
 .student-info {
-    margin-top: 1%;
+    margin-top: 2%;
     font-weight: bold;
+    font-size: 30px;
+    color:rgb(49, 100, 104);
 }
 
 .student-box {
@@ -39,4 +44,47 @@ a {
 .show-more-div {
     margin-top: 5%;
     text-align: center;
+}
+
+.linked-students-box {
+    white-space: nowrap;
+    overflow-x: auto;
+    margin-left: 10%;
+    margin-right: 10%;
+} 
+
+.linked-student-name {
+    text-align: center;
+    font-weight: bold; 
+    font-size: 30px;
+}
+
+.linked-students-box ul { 
+    list-style: none; 
+}
+
+.linked-students-box ul li { 
+    display: inline-block;
+    margin-right: 4%; 
+    width: 35%; 
+}
+
+.acf-thumbnail {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+    margin-top: 2%;
+}
+
+.acf-student-box {
+    margin-top: 30px;
+}
+
+h2 {
+    color:rgb(49, 100, 104);
+}
+
+.status-label {
+    
 }
