@@ -19,12 +19,14 @@ get_header();
 		while ( have_posts() ) {
 			the_post();
 
-			echo '<div class="student-box">';
-			echo '<header class="student-name archive-header has-text-align-center">' . esc_html( get_the_title() ) . '</header>';
+			?>
 
-			echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
+			<div class="student-box">
+				<header class="student-name archive-header has-text-align-center"><?php echo esc_html( get_the_title() ); ?></header>
+				<div class="student-thumbnail"><?php echo get_the_post_thumbnail(); ?></div>
+				<div class="student-info has-text-align-center"><?php echo esc_html( get_the_excerpt() ); ?></div>
 
-			echo '<div class="student-info has-text-align-center">' . esc_html( get_the_excerpt() ) . '</div>';
+			<?php
 
 			$data = get_student_info( get_the_ID() );
 
@@ -33,7 +35,7 @@ get_header();
 			endforeach;
 
 			$activity = 'Inactive';
-			if ( 1 === $data['status'] ) {
+			if ( 1 === intval( $data['status'] ) ) {
 				$activity = 'Active';
 			}
 
@@ -54,24 +56,31 @@ get_header();
 				echo '<div class="student-info has-text-align-center">Profile status: ' . esc_html( $activity ) . '</div>';
 			}
 
-			echo '</div>';
+			?>
 
-			echo '<section> <h2>Linked Students</h2> <div class="linked-students-box"> ';
+			</div>
+			<section> <h2>Linked Students</h2> <div class="linked-students-box">
+
+			<?php
 
 			$links = get_field( 'links' );
 			if ( $links ) {
 				echo '<ul>';
 				foreach ( $links as $student_link ) :
 					$student_post = (array) $student_link;
-					echo '<li class="linked-inner">';
-					echo '<a class="linked-student-name" href=" ' . esc_url( $student_post['guid'] ) . ' ">' . esc_html( $student_post['post_title'] ) . '</a>';
-					echo '<div class="linked-student-thumbnail">' . get_the_post_thumbnail( $student_post['ID'] ) . '</div>';
-					echo '</li>';
+					?>
+					<li class="linked-inner">
+						<a class="linked-student-name" href=<?php echo esc_url( $student_post['guid'] ); ?> > <?php echo esc_html( $student_post['post_title'] ); ?></a>
+						<div class="linked-student-thumbnail"><?php echo get_the_post_thumbnail( $student_post['ID'] ); ?></div>
+					</li>
+					<?php
 				endforeach;
 				echo '</ul>';
 			}
 
-			echo '</div> </section>';
+			?>
+			</div> </section> 
+			<?php
 
 		}
 	}

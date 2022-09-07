@@ -29,10 +29,12 @@ $students = get_posts( $args );
 foreach ( $students as $student ) {
 	$student       = (array) $student;
 	$student_title = str_replace( ' ', '-', strtolower( $student['post_title'] ) );
-	echo '<div class="acf-student-box">';
-	echo '<div class="student-name"> <a href=" ' . esc_url( home_url( 'student/' . $student_title ) ) . ' ">' . esc_html( $student['post_title'] ) . '</a> </div>';
-	echo '<div class="acf-thumbnail">' . get_the_post_thumbnail( $student['ID'] ) . '</div>';
-	echo '</div>';
+	?>
+	<div class="acf-student-box">
+		<div class="student-name"> <a href=<?php echo esc_url( home_url( 'student/' . $student_title ) ); ?>> <?php echo esc_html( $student['post_title'] ); ?></a> </div>
+		<div class="acf-thumbnail"><?php echo get_the_post_thumbnail( $student['ID'] ); ?></div>
+	</div>
+	<?php
 }
 
 ?>

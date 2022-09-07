@@ -40,11 +40,9 @@ get_header(); ?>
 			$query->the_post();
 
 			$st_title = str_replace( ' ', '-', strtolower( get_the_title() ) );
-
-			echo '<div class="student-name"> <a href=' . esc_url( home_url( $st_title ) ) . '>' . esc_html( get_the_title() ) . '</a> </div>';
-
-			echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
 			?>
+			<div class="student-name"> <a href=<?php echo esc_url( home_url( $st_title ) ); ?>> <?php echo esc_html( get_the_title() ); ?></a> </div>
+			<div class="student-thumbnail"><?php echo get_the_post_thumbnail(); ?></div>
 	</div>
 			<?php
 		}

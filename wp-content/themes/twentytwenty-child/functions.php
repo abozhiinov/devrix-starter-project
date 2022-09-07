@@ -21,15 +21,21 @@ endif;
 add_filter( 'locale_stylesheet_uri', 'chld_thm_cfg_locale_css' );
 
 if ( ! function_exists( 'chld_thm_cfg_parent_css' ) ) :
+	/**
+	 * Enqueue styles
+	 */
 	function chld_thm_cfg_parent_css() {
-		wp_enqueue_style( 'chld_thm_cfg_parent', trailingslashit( get_template_directory_uri() ) . 'style.css', array() );
-		wp_enqueue_style( 'chld_thm_cfg_child', trailingslashit( get_stylesheet_directory_uri() ) . 'style.css', array() );
+		wp_enqueue_style( 'chld_thm_cfg_parent', trailingslashit( get_template_directory_uri() ) . 'style.css', array(), DX_ASSETS_VERSION );
+		wp_enqueue_style( 'chld_thm_cfg_child', trailingslashit( get_stylesheet_directory_uri() ) . 'style.css', array(), DX_ASSETS_VERSION );
 	}
 endif;
 add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css', 10 );
 
+/**
+ * Enqueue scripts
+ */
 function ajax_scripts_method() {
-	wp_enqueue_script( 'student-ajax', get_stylesheet_directory_uri() . '/settings-student.js', array( 'jquery' ), DX_ASSETS_VERSION );
+	wp_enqueue_script( 'student-ajax', get_stylesheet_directory_uri() . '/settings-student.js', array( 'jquery' ), DX_ASSETS_VERSION, true );
 	wp_localize_script( 'student-ajax', 'my_ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 }
 add_action( 'admin_enqueue_scripts', 'ajax_scripts_method' );
@@ -194,19 +200,17 @@ function student_custom_box_html() {
 	<div>
 		<label for="class_field">Class / Grade</label></br>
 		<select name="class" class="postbox" value="<?php echo esc_html( $data['class'] ); ?>">
-			<option value="8"  <?php if ( 8 === $data['class'] ) { ?> selected <?php } ?>>8th</option>
-			<option value="9"  <?php if ( 9 === $data['class'] ) { ?> selected <?php } ?>>9th</option>
-			<option value="10" <?php if ( 10 === $data['class'] ) { ?> selected <?php } ?>>10th</option>
-			<option value="11" <?php if ( 11 === $data['class'] ) { ?> selected <?php } ?>>11th</option>
-			<option value="12" <?php if ( 12 === $data['class'] ) { ?> selected <?php } ?>>12th</option>
+			<option value="8"  <?php echo 8 === $data['class'] ? 'selected' : ''; ?>>8th</option>
+			<option value="9"  <?php echo 9 === $data['class'] ? 'selected' : ''; ?>>9th</option>
+			<option value="10" <?php echo 10 === $data['class'] ? 'selected' : ''; ?>>10th</option>
+			<option value="11" <?php echo 11 === $data['class'] ? 'selected' : ''; ?>>11th</option>
+			<option value="12" <?php echo 12 === $data['class'] ? 'selected' : ''; ?>>12th</option>
 		</select>
 	</div>
 	<div>
-		<label for="activity">Activity Status </label></br>
-		<select name="status" class="postbox" value="<?php echo esc_html( $data['status'] ); ?>">
-			<option value="1" <?php if ( 1 === $data['status'] ) { ?> selected <?php } ?>>Active</option>
-			<option value="0" <?php if ( 0 === $data['status'] ) { ?> selected <?php } ?>>Inactive</option>
-		</select>
+		<label for="activity">Profile Status</label></br>
+		<input name="status" type="radio" <?php echo 1 === intval( $data['status'] ) ? 'checked' : ''; ?> value="1" >Active</input></br>
+		<input name="status" type="radio" <?php echo 0 === intval( $data['status'] ) ? 'checked' : ''; ?> value="0" >Inactive</input>
 	</div>
 	<?php
 }
@@ -475,7 +479,7 @@ function show_checkbox_status_ajax() {
 /**
  *  Function executed by AJAX when a checkbox is un/checked on the settings page
  * */
-function ajax_func() {
+function ajax_students_settings() {
 	$options                     = get_option( 'show_ajax_settings' );
 	$options[ $_POST['option'] ] = 0;
 	if ( 'true' === $_POST['checked'] ) {
@@ -483,7 +487,7 @@ function ajax_func() {
 	}
 	update_option( 'show_ajax_settings', $options );
 }
-add_action( 'wp_ajax_ajax_func', 'ajax_func' );
+add_action( 'wp_ajax_ajax_students_settings', 'ajax_students_settings' );
 
 /**
  * Add a column for the activity status on the student dashboard
@@ -502,8 +506,8 @@ add_filter( 'manage_student_posts_columns', 'add_student_columns' );
 function print_extra_columns() {
 	$id      = get_the_ID();
 	$meta    = get_post_meta( $id );
-	$checked = ( 1 == $meta['status'][0] ) ? 'checked' : '';
-	echo '<form method="post"> <div > <input type="checkbox" class="student-status" id="' . get_the_ID() . '" name="status" value="1" ' . $checked . '  /> </div> </form>';
+	$checked = ( 1 === intval( $meta['status'][0] ) ) ? 'checked' : '';
+	echo '<form method="post"> <div > <input type="checkbox" class="student-status" id="' . get_the_ID() . '" name="status" value="1" ' . esc_html( $checked ) . '  /> </div> </form>';
 }
 add_action( 'manage_student_posts_custom_column', 'print_extra_columns' );
 
@@ -532,7 +536,7 @@ function student_status_orderby( $query ) {
 
 	$orderby = $query->get( 'orderby' );
 
-	if ( 'status' == $orderby ) {
+	if ( 'status' === $orderby ) {
 		$query->set( 'meta_key', 'status' );
 		$query->set( 'orderby', 'meta_value' );
 	}
@@ -587,10 +591,11 @@ add_action( 'admin_init', 'register_dictionary_settings' );
  * Callback for a custom setting
  * */
 function show_dictionary_search() {
-	$body = ! empty( $result = get_transient( 'dictionary_transient' ) ) ? $result : '';
+	$body   = ! empty( $result = get_transient( 'dictionary_transient' ) ) ? $result : '';
 	$search = isset( $_POST['dictionary-search'] ) ? sanitize_text_field( wp_unslash( $_POST['dictionary-search'] ) ) : '';
-	echo '<form method="post" action="' . esc_url( admin_url( 'admin.php?page=dictionary' ) ) . '"> 
-		<input type="search" class="dictionary-search" name="dictionary-search" placeholder="Search..." value="' . esc_html( $search ) . '"> 
+	?>
+	<form method="post" action="' . esc_url( admin_url( 'admin.php?page=dictionary' ) ) . '"> 
+		<input type="search" class="dictionary-search" name="dictionary-search" placeholder="Search..." value="<?php echo esc_html( $search ); ?>"> 
 		<input type="submit" class="dictionary-submit"> 
 		<div> 
 			<label for="search">Keep search for:</label></br>
@@ -598,7 +603,8 @@ function show_dictionary_search() {
 				<option value="10">10 seconds</option>
 			</select> 
 		</div>
-	</form> <div class="result-data"> ' . $body . ' </div>';
+	</form> <div class="result-data"> <?php echo $body; ?></div>;
+	<?php
 }
 
 /**
@@ -634,7 +640,7 @@ function students_shortcode( $attributes ) {
 		$attributes
 	);
 
-	$args = array(
+	$args  = array(
 		'post_type'      => 'student',
 		'p'              => $shortcode_args['student-id'],
 		'posts_per_page' => $shortcode_args['number-of-students'],
@@ -648,10 +654,11 @@ function students_shortcode( $attributes ) {
 			<?php
 			$query->the_post();
 			$data = get_student_info( get_the_ID() );
-
-			echo '<div class="student-name"> <a href=" ' . esc_url( get_the_permalink() ) . ' "> ' . esc_html( get_the_title() ) . ', ' . esc_html( $data['class'] ) . ' Grade </a> </div>';
-			echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
 			?>
+
+			<div class="student-name"> <a href=<?php echo esc_url( get_the_permalink() ); ?>> <?php echo esc_html( get_the_title() ) . ', ' . esc_html( $data['class'] ) . ' Grade'; ?> </a> </div>
+			<div class="student-thumbnail"><?php echo get_the_post_thumbnail(); ?></div>
+			
 	</div>
 			<?php
 		}
@@ -661,7 +668,7 @@ function students_shortcode( $attributes ) {
 		if ( 'true' === $shortcode_args['infinite-scroll'] ) {
 			echo '<div class="infinite-scroll" value="' . esc_html( $displayed ) . '"> </div>';
 		} else {
-			echo load_show_more_button( $displayed, $query->found_posts );
+			echo wp_kses_post( load_show_more_button( $displayed, $query->found_posts ) );
 		}
 	}
 	wp_reset_postdata();
@@ -681,8 +688,10 @@ add_shortcode( 'students', 'students_shortcode' );
  * @param int $found found.
  */
 function load_show_more_button( $displayed, $found ) {
-	echo '<div class="show-more-div"> <button class="show-more" value1="' . esc_html( $displayed ) . '" value2="' . esc_html( $found ) . '" name="show-more">Show more</button> </div> ';
-	echo '<div class="show-more-data"> </div>';
+	?>
+	<div class="show-more-div"> <button class="show-more" value1=<?php echo esc_html( $displayed ); ?> value2=<?php echo esc_html( $found ); ?> name="show-more">Show more</button> </div>
+	<div class="show-more-data"> </div>
+	<?php
 }
 
 /**
@@ -703,10 +712,10 @@ function student_show_more() {
 			<?php
 			$query->the_post();
 			$data = get_student_info( get_the_ID() );
-
-			echo '<div class="student-name"> <a href=" ' . esc_url( get_the_permalink() ) . ' "> ' . esc_html( get_the_title() ) . ', ' . esc_html( $data['class'] ) . ' Grade </a> </div>';
-			echo '<div class="student-thumbnail">' . get_the_post_thumbnail() . '</div>';
 			?>
+
+			<div class="student-name"> <a href=<?php echo esc_url( get_the_permalink() ); ?>> <?php echo esc_html( get_the_title() ) . ', ' . esc_html( $data['class'] ) . ' Grade'; ?> </a> </div>
+			<div class="student-thumbnail"><?php echo get_the_post_thumbnail(); ?></div>
 	</div>
 			<?php
 		}
@@ -733,9 +742,9 @@ function infinite_more_data() {
 			<?php
 			$query->the_post();
 			$data = get_student_info( get_the_ID() );
-			echo '<div class="student-name"> <a href=" ' . esc_url( get_the_permalink() ) . ' ">' . esc_html( get_the_title() ) . ', ' . esc_html( $data['class'] ) . ' Grade </a> </div>';
-			echo '<div class="student-thumbnail">' . wp_kses_post( get_the_post_thumbnail() ) . '</div>';
 			?>
+			<div class="student-name"> <a href=" ' . esc_url( get_the_permalink() ) . ' "><?php echo esc_html( get_the_title() ) . ', ' . esc_html( $data['class'] ) . ' Grade'; ?> </a> </div>
+			<div class="student-thumbnail"><?php echo wp_kses_post( get_the_post_thumbnail() ); ?></div>
 	</div>
 			<?php
 		}
