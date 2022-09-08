@@ -71,7 +71,7 @@ get_header();
 					?>
 					<li class="linked-inner">
 						<a class="linked-student-name" href=<?php echo esc_url( $student_post['guid'] ); ?> > <?php echo esc_html( $student_post['post_title'] ); ?></a>
-						<div class="linked-student-thumbnail"><?php echo get_the_post_thumbnail( $student_post['ID'] ); ?></div>
+						<div class="linked-student-thumbnail"> <a href=<?php echo esc_url( $student_post['guid'] ); ?>> <?php echo get_the_post_thumbnail( $student_post['ID'] ); ?> </a> </div>
 					</li>
 					<?php
 				endforeach;

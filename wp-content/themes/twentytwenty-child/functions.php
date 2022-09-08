@@ -622,7 +622,7 @@ function show_dictionary_search() {
 				<option value="10">10 seconds</option>
 			</select> 
 		</div>
-	</form> <div class="result-data"> <?php echo $body; ?></div>;
+	</form> <div class="result-data"> <?php echo $body; ?></div>
 	<?php
 }
 
@@ -678,7 +678,7 @@ function students_shortcode( $attributes ) {
 			?>
 
 			<div class="student-name"> <a href=<?php echo esc_url( get_the_permalink() ); ?>> <?php echo esc_html( get_the_title() ) . ', ' . esc_html( $data['class'] ) . ' Grade'; ?> </a> </div>
-			<div class="student-thumbnail"><?php echo get_the_post_thumbnail(); ?></div>
+			<div class="student-thumbnail"><a href=<?php echo esc_url( get_the_permalink() ); ?>><?php echo get_the_post_thumbnail(); ?></a></div>
 	</div>
 			<?php
 		}
@@ -731,7 +731,7 @@ function student_show_more() {
 			?>
 
 			<div class="student-name"> <a href=<?php echo esc_url( get_the_permalink() ); ?>> <?php echo esc_html( get_the_title() ) . ', ' . esc_html( $data['class'] ) . ' Grade'; ?> </a> </div>
-			<div class="student-thumbnail"><?php echo get_the_post_thumbnail(); ?></div>
+			<div class="student-thumbnail"><a href=<?php echo esc_url( get_the_permalink() ); ?>><?php echo get_the_post_thumbnail(); ?></a></div>
 	</div>
 			<?php
 		}
@@ -759,8 +759,8 @@ function infinite_more_data() {
 			$query->the_post();
 			$data = get_student_info( get_the_ID() );
 			?>
-			<div class="student-name"> <a href=" ' . esc_url( get_the_permalink() ) . ' "><?php echo esc_html( get_the_title() ) . ', ' . esc_html( $data['class'] ) . ' Grade'; ?> </a> </div>
-			<div class="student-thumbnail"><?php echo wp_kses_post( get_the_post_thumbnail() ); ?></div>
+			<div class="student-name"> <a href=<?php echo esc_url( get_the_permalink() ); ?>><?php echo esc_html( get_the_title() ) . ', ' . esc_html( $data['class'] ) . ' Grade'; ?> </a> </div>
+			<div class="student-thumbnail"><a href=<?php echo esc_url( get_the_permalink() ); ?>><?php echo wp_kses_post( get_the_post_thumbnail() ); ?></a></div>
 	</div>
 			<?php
 		}

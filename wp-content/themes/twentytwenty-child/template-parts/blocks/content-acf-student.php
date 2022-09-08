@@ -32,7 +32,7 @@ foreach ( $students as $student ) {
 	?>
 	<div class="acf-student-box">
 		<div class="student-name"> <a href=<?php echo esc_url( home_url( 'student/' . $student_title ) ); ?>> <?php echo esc_html( $student['post_title'] ); ?></a> </div>
-		<div class="acf-thumbnail"><?php echo get_the_post_thumbnail( $student['ID'] ); ?></div>
+		<div class="acf-thumbnail"> <a href=<?php echo esc_url( home_url( 'student/' . $student_title ) ); ?>> <?php echo get_the_post_thumbnail( $student['ID'] ); ?> </a> </div>
 	</div>
 	<?php
 }

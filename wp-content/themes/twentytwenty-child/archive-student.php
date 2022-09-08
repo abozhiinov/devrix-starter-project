@@ -42,7 +42,7 @@ get_header(); ?>
 			$st_title = str_replace( ' ', '-', strtolower( get_the_title() ) );
 			?>
 			<div class="student-name"> <a href=<?php echo esc_url( home_url( $st_title ) ); ?>> <?php echo esc_html( get_the_title() ); ?></a> </div>
-			<div class="student-thumbnail"><?php echo get_the_post_thumbnail(); ?></div>
+			<div class="student-thumbnail"><a href=<?php echo esc_url( home_url( $st_title ) ); ?>><?php echo get_the_post_thumbnail(); ?></a></div>
 	</div>
 			<?php
 		}
